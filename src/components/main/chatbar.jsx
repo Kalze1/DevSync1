@@ -21,7 +21,7 @@ const chatbar = () => {
               <div className="font-medium dark:text-white">
                 Jean Marc
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-200">
+              <div className="  max-h-5 overflow-hidden text-sm text-gray-600 dark:text-gray-200">
                 Text me when you get back
               </div>
             </div>
@@ -42,7 +42,7 @@ const chatbar = () => {
               <div className="font-medium dark:text-white">
                 Designer
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-200">
+              <div className=" max-h-5 overflow-hidden text-sm  text-gray-600  dark:text-gray-200">
                 Hello there, I was hopping if you could help me with something
               </div>
             </div>
@@ -62,7 +62,7 @@ const chatbar = () => {
               <div className="font-medium dark:text-white">
                 CEO
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-200">
+              <div className=" max-h-5 overflow-hidden text-sm text-gray-600 dark:text-gray-200">
                 Marine Jeanne
               </div>
             </div>
@@ -82,7 +82,7 @@ const chatbar = () => {
               <div className="font-medium dark:text-white">
                 CTO
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-200">
+              <div className=" max-h-5 overflow-hidden text-sm text-gray-600 dark:text-gray-200">
                 Boby Park
               </div>
             </div>
