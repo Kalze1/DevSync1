@@ -1,5 +1,5 @@
 import React from 'react'
-import Avatar from './avatar'
+import Avatar from '../main/avatar'
 const chattop = () => {
     return (
         <div>
@@ -11,7 +11,7 @@ const chattop = () => {
 
                             </a>
                             <div className="hidden md:block">
-                                <div className="flex items-baseline">
+                                <div className="flex items-baselines space-x-4">
                                     <a className="text-gray-300  hover:text-gray-800 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium" href="/#">
                                         <li className="flex flex-row">
                                             <div className="flex items-center flex-1 p-4 cursor-pointer select-none">

@@ -1,4 +1,5 @@
 import React from 'react'
+
 import Chattop from '../navs/chattop'
 import Chatinput from './chatinput'
 import { useState } from 'react'
@@ -10,11 +11,8 @@ import 'highlight.js/styles/github.css';
 
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
-// new Picker({ data })
-
-
-
-const chat = () => {
+import GroupChatTop from '../navs/GroupChatTop'
+const GroupChat = () => {
 
     const [message, setMessage] = useState(null);
     // const [bubbleMessage, setBubbleMessage] = useState(false);
@@ -85,7 +83,7 @@ const chat = () => {
 
 
             <div className="w-1/2 flex flex-col">
-                <Chattop />
+                <GroupChatTop />
 
                 <div className="flex flex-col flex-auto h-full p-6 contain" >
                     <div className="flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-full p-4">
@@ -94,28 +92,45 @@ const chat = () => {
                                 <div className="grid grid-cols-12 gap-y-2">
 
 
-                                    {/*                                                                         
-                                    <div className="col-start-1 col-end-8 p-3 rounded-lg">
-                                        <div className="flex flex-row items-center">
-                                            <div className="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">
-                                                A
-                                            </div>
-                                            <div className="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl">
-                                                <div onClick={printStatement}>Hey How are you today?</div>
-                                            </div>
-                                        </div>
-                                    </div> */}
-
-
-
-
-
                                     {
+                                        messages.map((msg, index) => (
+
+
+                                            <div className="col-start-1 col-end-8 p-3 rounded-lg" key={index}>
+                                                <div className="flex flex-row items-center">
+                                                    <div className="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">
+                                                        A
+                                                    </div>
+                                                    <div className="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl">
+                                                        <div>
+
+                                                            <div>
+                                                                {isCode ? (
+                                                                    <HighlightCode>{msg}</HighlightCode>
+                                                                ) : (
+                                                                    msg
+                                                                )}
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        ))
+
+                                    }
+
+
+
+
+
+                                    {/* {
 
                                         messages.map((msg, index) => (
                                             <div
                                                 key={index}
-                                                className="col-start-6 col-end-13 p-3 rounded-lg flex flex-col-reverse"
+                                                className="col-start-1 col-end-8 p-3 rounded-lg flex flex-col-reverse"
                                             >
                                                 <div className="flex items-center justify-start flex-row-reverse flex-end">
                                                     <div className="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">
@@ -136,7 +151,7 @@ const chat = () => {
 
 
 
-                                    }
+                                    } */}
                                 </div>
                             </div>
                         </div>
@@ -233,4 +248,4 @@ const chat = () => {
     )
 }
 
-export default chat
+export default GroupChat
