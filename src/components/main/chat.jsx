@@ -70,7 +70,7 @@ const chat = () => {
 
 
 
-            <div className="w-1/2 flex flex-col">
+            <div className="w-1/2  flex flex-col  ">
                 <Chattop />
 
 
@@ -112,10 +112,10 @@ const chat = () => {
 
                 </div> */}
 
-                <div className="flex flex-col flex-auto h-full p-6 contain" >
-                    <div className="flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-full p-4">
-                        <div className="flex flex-col h-full overflow-x-auto mb-4">
-                            <div className="flex flex-col h-full">
+                <div className="flex flex-col flex-auto  p-6 contain " >
+                    <div className="flex flex-col  flex-auto overflow-auto flex-shrink-0 rounded-2xl bg-gray-200 h-80 p-4">
+                        <div className="flex flex-col-reverse h-full overflow-auto mb-4">
+                            <div className="flex flex-col-reverse ">
                                 <div className="grid grid-cols-12 gap-y-2">
                                     <div className="col-start-1 col-end-8 p-3 rounded-lg">
                                         <div className="flex flex-row items-center">
