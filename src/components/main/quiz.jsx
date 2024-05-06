@@ -51,10 +51,7 @@ const DynamicQuiz = () => {
       alert('Please select an answer.');
     }
   };
-  // const handleResetAnswer = () => {
-  //   setSelectedAnswer(null);
-  //   setShowAnswer(false); // Hide answer on reset
-  // };
+  
   const attemptedQuestions = currentQuestion ; // Calculate attempted questions
 
   return (
@@ -85,12 +82,7 @@ const DynamicQuiz = () => {
           ))}
           
         </ul>
-        
-        {/* {showAnswer && ( // Conditionally display answer after submission
-                  <p className="text-base font-medium text-green-500 mt-2">
-                    Correct Answer: {questions[currentQuestion].choices[questions[currentQuestion].correctAnswerIndex]}
-                  </p>
-                )} */}
+      
       </fieldset>
       <div className="progress-container">
             <div
@@ -108,13 +100,7 @@ const DynamicQuiz = () => {
       >
         {currentQuestion === questions.length ? 'Complete Quiz' : 'Next Question'}
       </button>
-      {/* <button
-          className="py-1 px-2 text-sm bg-gray-200 hover:bg-gray-300 rounded-md mt-2 ml-2"
-          onClick={handleResetAnswer}
-          disabled={selectedAnswer === null || currentQuestion === questions.length} // Disable button if no answer selected or on last question
-        >
-          Reset Answer
-      </button> */}
+      
       {currentQuestion === questions.length && ( // Display score on completion
       <p className="mt-4 text-center">Congratulations! You scored {score} out of {questions.length} questions.</p>
     
