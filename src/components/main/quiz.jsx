@@ -64,13 +64,18 @@ const DynamicQuiz = () => {
     }
   };
   
+<<<<<<< HEAD
   const attemptedQuestions = currentQuestion -1 ; // Calculate attempted questions
+=======
+  const attemptedQuestions = currentQuestion ; // Calculate attempted questions
+>>>>>>> f67351f65c4a9cb5f36ee675a49735d9d3d76c06
 
   return (
 <div class="quiz-container mx-auto max-w-2xl p-4 ">
           <div className="question-container">
           {questions.length > currentQuestion && (<h2 className="text-xl font-medium mb-4"> Question {currentQuestion + 1} </h2>) }
           
+<<<<<<< HEAD
             <fieldset className="mb-5 mt-10">
             <legend className="text-base font-medium text-gray-900 mb-5" > {questions[currentQuestion]?.question}</legend>
             <ul className="list-none">
@@ -153,6 +158,32 @@ const DynamicQuiz = () => {
         </div> 
       
       )}
+=======
+        </ul>
+      
+      </fieldset>
+      <div className="progress-container">
+            <div
+              className="radial-progress" // Update class name if needed
+              style={{ "--value": `${(attemptedQuestions / questions.length) * 100}` }} // Update calculation
+              role="progressbar"
+              aria-valuenow={attemptedQuestions} // Update aria-valuenow
+            >
+              {attemptedQuestions}/{questions.length}
+            </div>
+          </div>
+      <button
+        className="py-2 px-4 bg-blue-500 text-white rounded-md mt-4 hover:bg-blue-700"
+        onClick={handleAnswerSubmit}// Disable button on last question
+      >
+        {currentQuestion === questions.length ? 'Complete Quiz' : 'Next Question'}
+      </button>
+      
+      {currentQuestion === questions.length && ( // Display score on completion
+      <p className="mt-4 text-center">Congratulations! You scored {score} out of {questions.length} questions.</p>
+    
+    )}
+>>>>>>> f67351f65c4a9cb5f36ee675a49735d9d3d76c06
     </div>
   );
 };

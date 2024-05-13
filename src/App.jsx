@@ -19,8 +19,8 @@ function App() {
       <div className="flex">
         
         <Sidebar />
-        <DynamicQuiz />
-        {/* <QuizComponent /> */}
+        {/* <DynamicQuiz /> */}
+        <QuizComponent />
         
 
       </div>
