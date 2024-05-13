@@ -37,11 +37,14 @@ const DynamicQuiz = () => {
 
   const handleAnswerClick = (index) => {
     setSelectedAnswer(index);
+    {score}
   };
 
   const handleNextQuestion = () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
+      const isCorrect = selectedAnswer === questions[currentQuestion].correctAnswerIndex;
+      setScore (isCorrect ? score + 1 : score );
       setSelectedAnswers((prevAnswers) => [...prevAnswers]); // Keep previous answers on next question
     }
   };
@@ -52,7 +55,8 @@ const DynamicQuiz = () => {
       const isCorrect = selectedAnswer === questions[currentQuestion].correctAnswerIndex;
       setScore(isCorrect ? score + 1 : score); // Update score based on correct answer
       // setShowAnswer(true); // Show answer after submission
-      setCurrentQuestion(currentQuestion + 1);
+      // setCurrentQuestion(currentQuestion + 1);
+      {score}
       setSelectedAnswer(null); // Reset selected answer
       // alert({score})
     } else {
@@ -60,19 +64,20 @@ const DynamicQuiz = () => {
     }
   };
   
-  const attemptedQuestions = currentQuestion ; // Calculate attempted questions
+  const attemptedQuestions = currentQuestion -1 ; // Calculate attempted questions
 
   return (
-<div class="quiz-container mx-auto max-w-2xl p-4  ">
+<div class="quiz-container mx-auto max-w-2xl p-4 ">
           <div className="question-container">
-          <h2 className="text-xl font-medium mb-4">Question {currentQuestion + 1}</h2>
-          <fieldset className="mb-5 mt-10">
+          {questions.length > currentQuestion && (<h2 className="text-xl font-medium mb-4"> Question {currentQuestion + 1} </h2>) }
+          
+            <fieldset className="mb-5 mt-10">
             <legend className="text-base font-medium text-gray-900 mb-5" > {questions[currentQuestion]?.question}</legend>
             <ul className="list-none">
                 
               {questions[currentQuestion]?.choices?.map((choice, i) => (
                 <li key={i} className="flex items-center mb-4">
-                  <input
+                  <input 
                     id={`country-option-${i + 1}`}
                     type="radio"
                     name="countries"
@@ -105,14 +110,14 @@ const DynamicQuiz = () => {
                 </button>
               {currentQuestion === questions.length - 1 ? ( 
                 <button
-                  className="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 cursor-not-allowed"
-                  onClick={handleAnswerSubmit}
+                className="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 "
+                onClick={handleAnswerSubmit}
                 >
                   Submit Quiz
                 </button>
               ) : (
                 <button
-                  className="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 cursor-not-allowed"
+                  className="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 "
                   onClick={handleNextQuestion}
                 >
                   Next Question
