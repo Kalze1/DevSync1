@@ -6,7 +6,6 @@ import Sidebar from "./components/main/sidebar"
 import profile from "./components/main/profile"
 import avatar from "./components/main/avatar"
 import Chattop from "./components/main/chattop"
-import DynamicQuiz from "./components/main/quiz"
 import QuizComponent from "./components/main/page"
 
 function App() {
@@ -19,7 +18,6 @@ function App() {
       <div className="flex">
         
         <Sidebar />
-        {/* <DynamicQuiz /> */}
         <QuizComponent />
         
 

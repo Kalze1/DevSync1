@@ -1,191 +1,216 @@
-import React, { useState, useEffect } from 'react';
+// import React, { useState } from 'react';
 
-const DynamicQuiz = () => {
-  const [questions, setQuestions] = useState([]);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [score, setScore] = useState(0); // Track user's score
-  const [showAnswer, setShowAnswer] = useState(false); // Flag to display answer
+// const QuizComponent = () => {
+//   const questionsD = [
+//     {
+//       "language": "JavaScript",
+//       "category": "Basics", // Added category property
+//       "question": ["What data type is used to store a single character in JavaScript?","What method is used to select elements by ID in JavaScript?"],
+//       "choices": [["int", "float", "string", "char"],["float", "string","int" ,"char"]],
+//       "correctAnswerIndex": [2,3],
+//       "explanation": "The 'string' data type is used to store text data, including single characters." // Added explanation property
+//     },
+//     {
+//       "language": "Python",
+//       "category": "Functions",
+//       "question": ["How do you define a function in Python?","What method is used to select elements by ID in JavaScript?"],
+//       "choices": [["def function_name():", "func = function_name()", "function function_name{}", "None of the above"],
+//                   ["def function_name():", "func = function_name()", "function function_name{}", "None of the above"] ],
+//       "correctAnswerIndex": [2,3]
+//     },
+//     {
+//       "language": "Java",
+//       "category": "Loops",
+//       "question": ["What is the syntax for a 'for' loop in Java?","What method is used to select elements by ID in JavaScript?"],
+//       "choices": [
+//        [ "for (int i = 0; i < n; i++) { ... }",
+//         "while (i < n) { ... }",
+//         "do { ... } while (i < n)",
+//         "None of the above"],
+//         ["def function_name():", "func = function_name()", "function function_name{}", "None of the above"]
+//       ],
+//       "correctAnswerIndex": [2,3],
+//       "hint": "The syntax includes an initialization statement, a condition, and an increment/decrement expression." // Added hint property
+//     },
+//     {
+//       "language": "Ruby",
+//       "category": "Arrays",
+//       "question": ["How do you access the first element of an array in Ruby?","What method is used to select elements by ID in JavaScript?"],
+//       "choices": [["array[0]", "array.first", "array.head", "None of the above"],
+//                   ["def function_name():", "func = function_name()", "function function_name{}", "None of the above"]],
+//       "correctAnswerIndex": [2,3]
+//     }
+//   ]
 
-  const questionsData = [
-    {
-      question: 'This radio element is part of a larger, open-source library of Tailwind CSS components. Learn more by going to the official <a href="https://tailwindui.com/">Tailwind UI</a> documentation.',
-      choices: ['USA', 'Germany', 'Spain', 'United Kingdom'],
-      correctAnswerIndex: 1,
-    },
-    {
-      question: 'This radio element is part of a larger, open-source library of Tailwind CSS components. Learn more by going to the official <a href="https://tailwindui.com/">Tailwind UI</a> documentation.',
-      choices: ['USA', 'Germany', 'Spain', 'United Kingdom'],
-      correctAnswerIndex: 0,
-    },
-    {
-      question: 'This radio element is part of a larger, open-source library of Tailwind CSS components. Learn more by going to the official <a href="https://tailwindui.com/">Tailwind UI</a> documentation.',
-      choices: ['USA', 'Germany', 'Spain', 'United Kingdom'],
-      correctAnswerIndex: 2,
-    },
-    {
-      question: 'This radio element is part of a larger, open-source library of Tailwind CSS components. Learn more by going to the official <a href="https://tailwindui.com/">Tailwind UI</a> documentation.',
-      choices: ['USA', 'Germany', 'Spain', 'United Kingdom'],
-      correctAnswerIndex: 3,
-    },
-    // Add more questions here in the same format
-  ];
+//   // State variables
+//   const [selectedLanguage, setSelectedLanguage] = useState("");
+//   const [currentQuestion, setCurrentQuestion] = useState(0);
+//   const [selectedAnswer, setSelectedAnswer] = useState(null);
+//   const [showAnswer, setShowAnswer] = useState(false);
+//   const [score, setScore] = useState(0);
+//   const [isOpen, setIsOpen] = useState(false);
+//   const programmingLanguages = ["JavaScript", "Python", "Java", "Ruby"];
 
-  useEffect(() => {
-    setQuestions(questionsData); // Set initial questions
-  }, []);
+//   // Functions
+//   const toggleDropdown = () => setIsOpen(!isOpen);
 
-  const handleAnswerClick = (index) => {
-    setSelectedAnswer(index);
-    {score}
-  };
+//   const handleAnswerClick = (index) => {
+//     // Consider adding checks for invalid question index or user selecting before a question is displayed
+//     setSelectedAnswer(index);
+//   };
 
-  const handleNextQuestion = () => {
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-      const isCorrect = selectedAnswer === questions[currentQuestion].correctAnswerIndex;
-      setScore (isCorrect ? score + 1 : score );
-      setSelectedAnswers((prevAnswers) => [...prevAnswers]); // Keep previous answers on next question
-    }
-  };
+//   const filteredQuestions = selectedLanguage
+//     ? questionsD.filter((question) => question.language === selectedLanguage)
+//     : [];
 
+//   const handleAnswerSubmit = () => {
+//     if (selectedAnswer !== null) {
+//       if (filteredQuestions.length > 0 && currentQuestion < filteredQuestions.length) {
+//         const question = filteredQuestions[currentQuestion];
+//         const isCorrect = selectedAnswer === question.correctAnswerIndex[currentQuestion];
+//         setScore(isCorrect ? score + 1 : score); // Update score based on correct answer
 
-  const handleAnswerSubmit = () => {
-    if (selectedAnswer !== null) {
-      const isCorrect = selectedAnswer === questions[currentQuestion].correctAnswerIndex;
-      setScore(isCorrect ? score + 1 : score); // Update score based on correct answer
-      // setShowAnswer(true); // Show answer after submission
-      // setCurrentQuestion(currentQuestion + 1);
-      {score}
-      setSelectedAnswer(null); // Reset selected answer
-      // alert({score})
-    } else {
-      alert('Please select an answer.');
-    }
-  };
-  
-<<<<<<< HEAD
-  const attemptedQuestions = currentQuestion -1 ; // Calculate attempted questions
-=======
-  const attemptedQuestions = currentQuestion ; // Calculate attempted questions
->>>>>>> f67351f65c4a9cb5f36ee675a49735d9d3d76c06
+//         const selectedChoice = question.choices[selectedAnswer];
+//         const correctChoiceIndex = question.correctAnswerIndex[currentQuestion];
+//         const isCorrectChoice = selectedAnswer === correctChoiceIndex;
+//         setShowAnswer(true); // Set state to show answer
+//       } else {
+//         console.error("Error: No questions found or invalid currentQuestion");
+//         console.log(score);
+//       }
 
-  return (
-<div class="quiz-container mx-auto max-w-2xl p-4 ">
-          <div className="question-container">
-          {questions.length > currentQuestion && (<h2 className="text-xl font-medium mb-4"> Question {currentQuestion + 1} </h2>) }
-          
-<<<<<<< HEAD
-            <fieldset className="mb-5 mt-10">
-            <legend className="text-base font-medium text-gray-900 mb-5" > {questions[currentQuestion]?.question}</legend>
-            <ul className="list-none">
+//       setSelectedAnswer(null); // Reset selected answer
+//     } else {
+//       alert('Please select an answer.');
+//     }
+//   };
+
+//   const handleNextQuestion = () => {
+//     if (currentQuestion < filteredQuestions.length - 1) {
+//       setCurrentQuestion(currentQuestion + 1);
+//       setSelectedAnswer(null); // Reset selected answer
+//     }
+//   };
+
+//   const handleLanguageClick = (language) => {
+//     setSelectedLanguage(language);
+//     setCurrentQuestion(0);
+//     setSelectedAnswer(null);
+//     setIsOpen(false); // Close dropdown after selection
+//   };
+
+//     return (
+//         <div className="quiz-container mx-auto max-w-2xl p-4">
+//             <div className="dropdown relative"> 
+//                 <div
+//                 tabIndex={0}
+//                 role="button"
+//                 className="btn m-1 text-white bg-blue-500 hover:bg-blue-700 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+//                 onClick={toggleDropdown}
+//                 >
+//                 {selectedLanguage || "Select a Programming Language"} {/* Display selected language or default text */}
+//                 </div>
+//                 { isOpen && (
+//                 <ul
+//                     tabIndex={0}
+//                     className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 absolute top-full left-0"
+//                 >
+//                     {programmingLanguages.map((language) => (
+//                     <li key={language}>
+//                         <a className="text-gray-700 hover:text-blue-500" onClick={() => handleLanguageClick(language)}>
+//                         {language}
+//                         </a>
+//                     </li>
+//                     ))}
+//                 </ul>
+//                 )}     
+//             </div>
+//             {
+//                 selectedLanguage &&
+//             (
+//             <> 
+//                 { filteredQuestions.length > 0 ? ( 
+//                 <>
+//                     <div className="question-container">
+//                     <h2 className="text-xl font-medium mb-4">
+//                         Question {currentQuestion + 1}
+//                     </h2>
+
+//                     <fieldset className="mb-5 mt-10">
+//                         {/* Map through filtered questions and render choices with radio buttons */}
+//                     {filteredQuestions.map((question, questionIndex) => {
+//                     if (question.choices && question.choices[currentQuestion]) {
+//                         return (
+//                         <div key={questionIndex}>
+//                             <div className="text-base font-medium text-gray-900 mb-5">
+//                             {question.question[currentQuestion]}
+//                             </div>
+//                             <ul className="list-none">
+//                             {question.choices[currentQuestion].map((choice, i) => (
+//                                 <li key={i} className="flex items-center mb-4">
+//                                 <input
+//                                     id={`question-option-${i + 1}`}
+//                                     type="radio"
+//                                     name="choices" // Group radio buttons by question
+//                                     value={i}
+//                                     className="h-4 w-4 border-gray-300 focus:ring-2 focus:ring-blue-300"
+//                                     aria-labelledby={`question-option-${i + 1}`}
+//                                     aria-describedby={`question-option-${i + 1}`}
+//                                     checked={selectedAnswer === i} // Check radio button based on selectedAnswer state
+//                                     onChange={() => setSelectedAnswer(i)} // Update selectedAnswer on change
+//                                 />
+//                                 <label
+//                                     htmlFor={`question-option-${i + 1}`}
+//                                     className="text-sm font-medium text-gray-900 ml-2 block"
+//                                 >
+//                                     {choice}
+//                                 </label>
+//                                 </li>
+//                             ))}
+//                             </ul>
+//                         </div>
+//                         );
+//                     }
+//                     })}
+//                     </fieldset>
+//                     <div className="button-container flex justify-between mt-4">
+//                     {/* Previous button (disabled on first question) */}
+//                     <button
+//                         className="py-2 px-4 bg-gray-200 text-gray-500 mr-3 rounded-md hover:bg-gray-300 disabled:opacity-50"
+//                         disabled={currentQuestion === 0}
+//                     onClick={() => setCurrentQuestion(currentQuestion - 1)}
+//                     >
+//                         Previous
+//                     </button>
+
+//                 {/* Submit or next question button based on current question index */}
+//                 {currentQuestion === filteredQuestions.length - 1 ? (
+//                     <button
+//                     className="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+//                     onClick={handleAnswerSubmit}
+//                     >
+//                     Submit Quiz
+//                     </button>
+//                 ) : (
+//                     <button
+//                     className="py-2 px-4 bg-green-500 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
+//                     onClick={handleNextQuestion}
+//                     >
+//                     Next Question
+//                     </button>
+//                 )}
+//                     </div>
                 
-              {questions[currentQuestion]?.choices?.map((choice, i) => (
-                <li key={i} className="flex items-center mb-4">
-                  <input 
-                    id={`country-option-${i + 1}`}
-                    type="radio"
-                    name="countries"
-                    value={choice}
-                    className="h-4 w-4 border-gray-300 focus:ring-2 focus:ring-blue-300"
-                    aria-labelledby={`country-option-${i + 1}`}
-                    aria-describedby={`country-option-${i + 1}`}
-                    checked={selectedAnswer === i}
-                    onChange={() => handleAnswerClick(i)}
-                  />
-                  <label htmlFor={`country-option-${i + 1}`} className="text-sm font-medium text-gray-900 ml-2 block">
-                    {choice}
-                  </label>
-                  
-                </li>
-              ))}
-              
-            </ul>
-          
-          </fieldset>
-          </div>
-
-          <div className="button-container justify-between mt-4">
-              <button
-                  className="py-2 px-4 bg-gray-200 text-gray-500 mr-3 rounded-md hover:bg-gray-300 disabled:opacity-50 "
-                  disabled={currentQuestion === 0}
-                  onClick={() => setCurrentQuestion(currentQuestion - 1)}
-                >
-                  Previous
-                </button>
-              {currentQuestion === questions.length - 1 ? ( 
-                <button
-                className="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 "
-                onClick={handleAnswerSubmit}
-                >
-                  Submit Quiz
-                </button>
-              ) : (
-                <button
-                  className="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 "
-                  onClick={handleNextQuestion}
-                >
-                  Next Question
-                </button>
-              )}
-          </div>
-          { currentQuestion < questions.length - 1 && score === 0 && (
-            <div className="progress-container mb-5" >
-              <div
-                className="radial-progress mt-5" // Update class name if needed
-                style={{ "--value": `${(attemptedQuestions / questions.length) * 100}` }} // Update calculation
-                role="progressbar"
-                aria-valuenow={attemptedQuestions} // Update aria-valuenow
-              >
-                {attemptedQuestions}/{questions.length}
-              </div>
-            </div> 
-          )}
-      
-      { score > 0 && questions.length > 0 && (
-          <div className="result-container mt-4">
-          <p className="text-center text-xl font-medium mb-2">Congratulations! You scored {score} out of {questions.length} questions.</p>
-          <div className="progress">
-            <div
-              className="progress-bar bg-green-500 h-2 rounded-full"
-              role="progressbar"
-              style={{ width: `${(score / questions.length) * 100}%` }}
-              aria-valuenow={score}
-              aria-valuemin="0"
-              aria-valuemax={questions.length}
-            ></div>
-          </div>
-        </div> 
-      
-      )}
-=======
-        </ul>
-      
-      </fieldset>
-      <div className="progress-container">
-            <div
-              className="radial-progress" // Update class name if needed
-              style={{ "--value": `${(attemptedQuestions / questions.length) * 100}` }} // Update calculation
-              role="progressbar"
-              aria-valuenow={attemptedQuestions} // Update aria-valuenow
-            >
-              {attemptedQuestions}/{questions.length}
-            </div>
-          </div>
-      <button
-        className="py-2 px-4 bg-blue-500 text-white rounded-md mt-4 hover:bg-blue-700"
-        onClick={handleAnswerSubmit}// Disable button on last question
-      >
-        {currentQuestion === questions.length ? 'Complete Quiz' : 'Next Question'}
-      </button>
-      
-      {currentQuestion === questions.length && ( // Display score on completion
-      <p className="mt-4 text-center">Congratulations! You scored {score} out of {questions.length} questions.</p>
-    
-    )}
->>>>>>> f67351f65c4a9cb5f36ee675a49735d9d3d76c06
-    </div>
-  );
-};
-
-export default DynamicQuiz;
+//                 </>
+//                 ) : (
+//                 <p className="text-center mt-4">No questions available in {selectedLanguage} yet.</p>
+//                         ) 
+//                     }
+//                 </>    
+//             ) 
+//             }
+                
+//             ) }
+//               </>
+//         </div>
+//     )
