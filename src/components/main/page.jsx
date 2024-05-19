@@ -1,62 +1,10 @@
 import React, { useState } from 'react';
 
 const QuizComponent = () => {
-  const questionsD = [
-    {
-      language: "JavaScript",
-      category: "Basics",
-      question: [
-        "What data type is used to store a single character in JavaScript?",
-        "What method is used to select elements by ID in JavaScript?",
-      ],
-      choices: [
-        ["int", "float", "string", "char"],
-        ["getElementById()", "querySelector()", "getElementByClassName()", "getElementByTagName()"],
-      ],
-      correctAnswerIndex: [2, 0],
-    },
-    {
-      language: "Python",
-      category: "Functions",
-      question: [
-        "How do you define a function in Python?",
-        "What method is used to select elements by ID in JavaScript?",
-      ],
-      choices: [
-        ["def function_name():", "func = function_name()", "function function_name{}", "None of the above"],
-        ["getElementById()", "querySelector()", "getElementByClassName()", "getElementByTagName()"],
-      ],
-      correctAnswerIndex: [0, 0],
-    },
-    {
-      language: "Java",
-      category: "Loops",
-      question: [
-        "What is the syntax for a 'for' loop in Java?",
-        "What method is used to select elements by ID in JavaScript?",
-      ],
-      choices: [
-        ["for (int i = 0; i < n; i++) { ... }", "while (i < n) { ... }", "do { ... } while (i < n)", "None of the above"],
-        ["getElementById()", "querySelector()", "getElementByClassName()", "getElementByTagName()"],
-      ],
-      correctAnswerIndex: [0, 0],
-    },
-    {
-      language: "Ruby",
-      category: "Arrays",
-      question: [
-        "How do you access the first element of an array in Ruby?",
-        "What method is used to select elements by ID in JavaScript?",
-      ],
-      choices: [
-        ["array[0]", "array.first", "array.head", "None of the above"],
-        ["getElementById()", "querySelector()", "getElementByClassName()", "getElementByTagName()"],
-      ],
-      correctAnswerIndex: [0, 0],
-    },
-  ];
+
 
   // State variables
+  const [questionsD, setquestionsD] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -65,6 +13,23 @@ const QuizComponent = () => {
   const [quizCompleted, setQuizCompleted] = useState(false);
   const programmingLanguages = ["JavaScript", "Python", "Java", "Ruby"];
 
+  
+useEffect(() => {
+  const fetchQuestions = async () => {
+    
+
+    try {
+      const response = await axios.get('http://localhost:3001/api/quiz');
+      setquestionsD(response.data);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      console.log("yesss");
+    }
+  };
+
+  fetchQuestions();
+}, []);
   // Helper functions
   const getCurrentQuestionData = () => {
     if (!selectedLanguage) return null;
