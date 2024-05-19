@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, {useEffect ,useState } from 'react';
+import axios from 'axios';
 
 const QuizComponent = () => {
 
@@ -13,7 +14,8 @@ const QuizComponent = () => {
   const [quizCompleted, setQuizCompleted] = useState(false);
   const programmingLanguages = ["JavaScript", "Python", "Java", "Ruby"];
 
-  
+
+//Feching Data  
 useEffect(() => {
   const fetchQuestions = async () => {
     
