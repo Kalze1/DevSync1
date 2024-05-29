@@ -1,8 +1,11 @@
-import React from 'react'
+import { useContext } from 'react'
 import Avatar from './avatar'
+import { RecentMessageContext } from '@/contexts/RecentMessageContext'
 
 
 const chatbar = () => {
+
+  const { recentMessage, messageTime } = useContext(RecentMessageContext)
   return (
 
 
@@ -27,12 +30,16 @@ const chatbar = () => {
               <div className="font-medium dark:text-white">
                 Jean Marc
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-200">
-                Text me when you get back
+              <div className=" overflow-hidden text-ellipsis whitespace-nowrap w-48 text-sm text-gray-600 dark:text-gray-200">
+
+                <span className='text-blue-300'>You: </span> {recentMessage}
+
+
+
               </div>
             </div>
             <div className="text-xs text-gray-600 dark:text-gray-200">
-              6:00 AM
+              {messageTime}
             </div>
           </div>
         </li>

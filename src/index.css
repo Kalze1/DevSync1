@@ -1,4 +1,34 @@
 @tailwind base;
-  @tailwind components;
-  @tailwind utilities;
+@tailwind components;
+@tailwind utilities;
 
+::-webkit-scrollbar {
+  width: 0;
+  /* Remove scrollbar space */
+  background: transparent;
+  /* Optional: just make scrollbar invisible */
+}
+
+
+@font-face {
+  font-family: 'VisbyRoundCF-DemiBold';
+  src: url('./assets/VisbyRoundCF-DemiBold.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'VisbyRoundCF-Heavy';
+  src: url('./assets/VisbyRoundCF-Heavy.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'VisbyRoundCF-Regular';
+  src: url('./assets/VisbyRoundCF-Regular.woff') format('woff');
+}
+
+.ce-ice-breaker-gif {
+  display: none;
+}
+
+.ce-chat-engine {
+  font-family: 'VisbyRoundCF-Regular' !important;
+}

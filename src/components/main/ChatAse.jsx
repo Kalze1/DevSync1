@@ -1,4 +1,5 @@
-import React, { useContext } from 'react'
+// import React from 'react'
+import React from 'react'
 import Chattop from '../navs/chattop'
 import Chatinput from './chatinput'
 import { useState } from 'react'
@@ -11,29 +12,14 @@ import 'highlight.js/styles/github.css';
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 // new Picker({ data })
-import axios from 'axios'
-import { RecentMessageContext } from '@/contexts/RecentMessageContext'
 
-
-
-
-const chat = () => {
-
-
-    const [userData, setUserData] = useState([])
-
-
-
-
-
-    const { setRecentMessage, messageTime, setMessageTime } = useContext(RecentMessageContext);
+const ChatAse = () => {
 
     const [message, setMessage] = useState(null);
     // const [bubbleMessage, setBubbleMessage] = useState(false);
     const [messages, setMessages] = useState([])
-    const [receiveMessages, setReceiveMessages] = useState([])
 
-
+    const [code, setCode] = useState('')
     const [isCode, setIsCode] = useState(false)
 
     const [selectedEmoji, setSelectedEmoji] = useState(null);
@@ -41,10 +27,6 @@ const chat = () => {
     const handleEmojiSelect = (emoji) => {
         setSelectedEmoji(emoji);
     };
-
-
-
-
 
 
     function HighlightCode({ children, language }) {
@@ -66,117 +48,110 @@ const chat = () => {
         setMessage(e.target.value)
     }
 
-    const modalOnClick = () => {
-        document.getElementById('my_modal_3').showModal()
-        setIsCode(true)
-    }
-
     const displayMessage = () => {
 
         if (message.trim() !== '') {  // Only add non-empty messages
             setMessages([...messages, message]);
             setMessage('');  // Clear the input field after sending
-            setRecentMessage(message)
-            // setIsCode(false)
-
-            const now = new Date();
-            const hour = now.getHours();
-            const minute = now.getMinutes();
-
-            const meridiem = hour >= 12 ? 'PM' : 'AM';
-            const hour12 = hour % 12 || 12
-
-            // Display the current time in the format "HH:MM"
-            const time = `${hour12.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} ${meridiem}`
-
-
-            setMessageTime(time)
-            console.log(messageTime);
-            console.log(message);
         }
-
-    }
-    const displayRecieveMessage = () => {
-
-        if (message.trim() !== '') {  // Only add non-empty messages
-            setReceiveMessages([...messages, message]);
-            setMessage('');  // Clear the input field after sending
-
-        }
-
 
     }
 
     const sendCode = () => {
         displayMessage()
-        // setIsCode(true)
+        setIsCode(true)
         console.log(isCode);
     }
-
-    const printStatement = () => {
-        console.log("hello");
-    }
     return (
-
         <>
 
 
 
 
 
-            <div className="w-1/2 flex flex-col">
+            <div className="w-1/2  flex flex-col  ">
                 <Chattop />
 
-                <div className="flex flex-col flex-auto h-full p-6 contain" >
-                    <div className="flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-full p-4">
-                        <div className="flex flex-col h-full overflow-x-auto mb-4">
-                            <div className="flex flex-col h-full">
+
+
+                {/* <div className='mt-auto'>
+
+
+
+                <div className="chat chat-start m-4">
+                    <div className="chat-image avatar">
+                        <div className="w-10 rounded-full">
+                            <img alt="Tailwind CSS chat bubble component" src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                        </div>
+                    </div>
+                    <div className="chat-header">
+
+
+                    </div>
+                    <div className="chat-bubble">You were the Chosen One!</div>
+                    <div className="chat-footer opacity-50">
+                        12:46
+                    </div>
+                </div>
+                <div className="chat chat-end">
+                    <div className="chat-image avatar">
+                        <div className="w-10 rounded-full">
+                            <img alt="Tailwind CSS chat bubble component" src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                        </div>
+                    </div>
+                    <div className="chat-header">
+
+
+                    </div>
+                    <div className="chat-bubble">I hate you!</div>
+                    <div className="chat-footer opacity-50">
+                        12:46
+                    </div>
+                </div>
+
+            </div> */}
+
+                <div className="flex flex-col flex-auto  p-6 contain " >
+                    <div className="flex flex-col  flex-auto overflow-auto flex-shrink-0 rounded-2xl bg-gray-200 h-80 p-4">
+                        <div className="flex flex-col-reverse h-full overflow-auto mb-4">
+                            <div className="flex flex-col-reverse ">
                                 <div className="grid grid-cols-12 gap-y-2">
-
-
-                                    {/*                                                                         
                                     <div className="col-start-1 col-end-8 p-3 rounded-lg">
                                         <div className="flex flex-row items-center">
                                             <div className="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">
                                                 A
                                             </div>
                                             <div className="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl">
-                                                <div onClick={printStatement}>Hey How are you today?</div>
+                                                <div>Hey How are you today?</div>
                                             </div>
                                         </div>
-                                    </div> */}
+                                    </div>
 
 
 
 
-
+                                   
                                     {
 
                                         messages.map((msg, index) => (
-                                            <div
-                                                key={index}
-                                                className="col-start-6 col-end-13 p-3 rounded-lg flex flex-col-reverse"
-                                            >
-                                                <div className="flex items-center justify-start flex-row-reverse flex-end">
+
+                                            <div key={index} className="col-start-6 col-end-13 p-3 rounded-lg">
+                                                <div className="flex items-center justify-start flex-row-reverse">
                                                     <div className="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">
                                                         A
                                                     </div>
                                                     <div className="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl">
-                                                        <div>
-                                                            {isCode ? (
-                                                                <div className='bg-slate-400'>
-                                                                    <HighlightCode>{msg}</HighlightCode>
+                                                        <div>{
+                                                            isCode ? (
+                                                                <HighlightCode>{msg}</HighlightCode>
+                                                            ) :
+                                                                (msg)
 
-                                                                </div>
-                                                            ) : (
-                                                                msg
-                                                            )}
-                                                        </div>
+                                                        }</div>
                                                     </div>
                                                 </div>
                                             </div>
                                         ))
-
 
 
                                     }
@@ -194,7 +169,7 @@ const chat = () => {
                             <div className='pl-2'>
 
                                 {/* Open the modal using document.getElementById('ID').showModal() method */}
-                                <button className="btn" onClick={modalOnClick}>
+                                <button className="btn" onClick={() => document.getElementById('my_modal_3').showModal()}>
 
                                     <svg className="w-5 h-5 svg-icon text-gray-400 " fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13.5 6L10 18.5" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M6.5 8.5L3 12L6.5 15.5" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M17.5 8.5L21 12L17.5 15.5" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
 
@@ -235,7 +210,7 @@ const chat = () => {
                                         <div className="modal-box">
                                             <form method="dialog">
                                                 {/* if there is a button in form, it will close the modal */}
-                                                <button onClick={() => setIsCode(false)} className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                                                <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                                             </form>
                                             <Picker data={data} onEmojiSelect={console.log} />
                                         </div>
@@ -265,14 +240,20 @@ const chat = () => {
                 {/* <EmojiPicker /> */}
 
                 {/* <div className='p-4'>
-                    <Chatinput />
-                </div> */}
+                <Chatinput />
+            </div> */}
 
             </div>
 
         </>
-
     )
 }
 
-export default chat
+export default ChatAse
+
+
+
+
+
+
+

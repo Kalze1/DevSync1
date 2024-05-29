@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const App = () => {
     const [messages, setMessages] = useState([]);
@@ -31,6 +31,9 @@ const App = () => {
                     </div>
                 ))}
             </div>
+
+
+
 
             <div className="fixed bottom-0 left-0 right-0 p-4 flex space-x-2">
                 <input

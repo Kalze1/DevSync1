@@ -1,40 +1,178 @@
 
+import { useState, useEffect } from "react"
+
+
+import "./App.css"
 import Chatbar from "./components/main/chatbar"
 import Chat from "./components/main/chat"
-import Navbar from "./components/main/navbar"
+// import Navbar from "./components/main/navbar"
 import Sidebar from "./components/main/sidebar"
 import Demo from "./components/main/demo"
 import KnowledgeBase from "./components/main/KnowledgeBase"
 import GroupChat from "./components/main/GroupChat"
 import GroupChatBar from "./components/main/GroupChatBar"
+import { RecentMessageContext } from "./contexts/RecentMessageContext"
+import Profile from "./components/main/Profile"
+import ChatAse from "./components/main/ChatAse"
+import ChatE from "./components/main/ChatE"
+import { ChatEngine, ChatEngineWrapper, Socket, ChatFeed, ChatSettings, ChatList } from "react-chat-engine"
+import { PrettyChatWindow } from "react-chat-engine-pretty"
+import AuthPage from "./components/main/AuthPage";
+import { useMultiChatLogic, MultiChatSocket, MultiChatWindow, getOrCreateChat, } from "react-chat-engine-advanced"
+
+import Sign_Up from "./components/main/Sign_Up"
+import Login from "./components/main/Login"
+import FullTemplate from "./components/main/FullTemplate"
+import Navbar from "./components/navs/Navbar"
+import ChatPretty from "./components/main/ChatPretty"
+import FullChatEngine from "./components/main/FullChatEngine"
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+// import DirectChatList from "./components/main/DirectChatList"
+import DirectChatList from "./components/main/DirectChatList"
+// import ChatCard from "./components/ChatsPage/ChatCard"
+import MemberList from "./components/main/MemberList"
+
 function App() {
 
+  const [recentMessage, setRecentMessage] = useState("recent message")
+  const [messageTime, setMessageTime] = useState(null)
+  const [user, setUser] = useState(undefined);
 
-  return (
-    <>
+  const [chats, setChats] = useState([]);
 
+
+
+  const [selectedChat, setSelectedChat] = useState(null);
+
+  const handleDirectChatCreated = (chat) => {
+    setSelectedChat(chat.id);
+  };
+
+
+
+  const projectId = "791f28ff-082b-47d7-96c0-6a79afd19040";
+  const username = "Tekuarit";
+  const secret = "Dagi9113";
+
+  useEffect(() => {
+    getOrCreateChat(
+      { projectId, username, secret },
+      {},
+      (chats) => {
+        const directChats = chats.filter(chat => chat.is_direct_chat);
+        setChats(directChats);
+      },
+      (error) => {
+        console.error('Error fetching chats:', error);
+      }
+    );
+  }, [projectId, username, secret]);
+  const chatProps = useMultiChatLogic(projectId, username, secret);
+
+
+
+  return (<>
+
+    <Router>
+
+      {/* <Login /> */}
+      {/* <FullTemplate /> */}
       {/* <Navbar /> */}
-      <div className="flex">
+      {/* <Navbar /> */}
+      {/* <ChatE /> */}
+      {/* <ChatPretty /> */}
 
-        <Sidebar />
+      <MultiChatSocket {...chatProps} />
+
+      <div className="flex" style={{ height: '100vh', fontFamily: "sans-serif" }}>
+
+        <Sidebar style={{ minWidth: '200px' }} />
+        <Routes>
+          <Route path="/auth" element={<Login />} />
+          <Route path="/chats" element={
+            <MultiChatWindow  {...chatProps} style={{ height: '100vh', flexGrow: 1 }}
+
+              renderChatSettings={(chatAppState) => (
+                <div>
+                  <MemberList
+                    projectID={projectId}
+                    chatID={chatAppState.activeChat}
+                    userName={username}
+                    userSecret={secret}
+                    onDirectChatCreated={handleDirectChatCreated}
+                    chatLogic={chatProps}
+                  />
+                </div>
+              )}
+            />
+            // <FullChatEngine />
+          } />
+          <Route path="/groups" element={
+            <MultiChatWindow
+              chats={chatProps.chats}
+              messages={chatProps.messages}
+              activeChatId={chatProps.activeChatId}
+              username={chatProps.username}
+              peopleToInvite={chatProps.peopleToInvite}
+              hasMoreChats={chatProps.hasMoreChats}
+              hasMoreMessages={chatProps.hasMoreMessages}
+              onChatFormSubmit={chatProps.onChatFormSubmit}
+              onChatCardClick={chatProps.onChatCardClick}
+              onChatLoaderShow={chatProps.onChatLoaderShow}
+              onMessageLoaderShow={chatProps.onMessageLoaderShow}
+              onMessageLoaderHide={chatProps.onMessageLoaderHide}
+              onBottomMessageShow={chatProps.onBottomMessageShow}
+              onBottomMessageHide={chatProps.onBottomMessageHide}
+              onMessageFormSubmit={chatProps.onMessageFormSubmit}
+              onInvitePersonClick={chatProps.onInvitePersonClick}
+              onRemovePersonClick={chatProps.onRemovePersonClick}
+              onDeleteChatClick={chatProps.onDeleteChatClick}
+              style={{ height: '100vh', flexGrow: 1 }}
+              renderChatList={(chatAppState) => (
+                <DirectChatList
+                  projectID={projectId}
+                  userName={username}
+                  userSecret={secret}
+                  {...chatAppState}
+                />
+              )}
+
+            />} />
+
+
+
+          <Route path="/Knowledge-base" element={<KnowledgeBase />} />
+        </Routes>
+        {/* <RecentMessageContext.Provider value={{ recentMessage, setRecentMessage, messageTime, setMessageTime }}> */}
+
         {/* <Chatbar /> */}
-        <GroupChatBar />
         {/* <Chat /> */}
-        {/* <KnowledgeBase /> */}
-        <GroupChat />
+
+
+        {/* <ChatAse /> */}
+        {/* <Chat /> */}
+        {/* <Profile /> */}
+        {/* <GroupChatBar /> */}
+        {/* <GroupChat /> */}
+
+        {/* </RecentMessageContext.Provider> */}
 
 
 
 
       </div>
-      {/* <Demo /> */}
+
+    </Router>
+
+    <Sign_Up />
 
 
+  </>)
 
-    </>
-
-
-  )
 }
+
+
+
+
 
 export default App

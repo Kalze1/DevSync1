@@ -27,7 +27,7 @@ const GroupChatBar = () => {
                                 React
                             </div>
                             <div className="text-sm text-gray-600 dark:text-gray-200">
-                                Dave: Text me when you get back
+                                <span className='text-blue-400'>Dave:</span> Text me when you get back
                             </div>
                         </div>
                         <div className="text-xs text-gray-600 dark:text-gray-200">
