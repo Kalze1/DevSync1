@@ -22,7 +22,7 @@ import { useMultiChatLogic, MultiChatSocket, MultiChatWindow, getOrCreateChat, }
 
 import Sign_Up from "./components/main/Sign_Up"
 import Login from "./components/main/Login"
-import FullTemplate from "./components/main/FullTemplate"
+// import FullTemplate from "./components/main/FullTemplate"
 import Navbar from "./components/navs/Navbar"
 import ChatPretty from "./components/main/ChatPretty"
 import FullChatEngine from "./components/main/FullChatEngine"
@@ -31,6 +31,12 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import DirectChatList from "./components/main/DirectChatList"
 // import ChatCard from "./components/ChatsPage/ChatCard"
 import MemberList from "./components/main/MemberList"
+import AudioChat from "./components/main/AudioChat"
+import CustomChatHeader from "./components/main/CustomChatHeader"
+import Chattop from "./components/navs/chattop"
+import DirectChat from "./components/main/DirectChat"
+import AudioCall from "./components/ChatsPage/AudioCall"
+import GroupChatTop from './components/navs/GroupChatTop'
 
 function App() {
 
@@ -50,9 +56,9 @@ function App() {
 
 
 
-  const projectId = "791f28ff-082b-47d7-96c0-6a79afd19040";
-  const username = "Tekuarit";
-  const secret = "Dagi9113";
+  const projectId = import.meta.env.VITE_PROJECT_ID;
+  const username = "DagiB";
+  const secret = "Dagi1234";
 
   useEffect(() => {
     getOrCreateChat(
@@ -75,12 +81,7 @@ function App() {
 
     <Router>
 
-      {/* <Login /> */}
-      {/* <FullTemplate /> */}
-      {/* <Navbar /> */}
-      {/* <Navbar /> */}
-      {/* <ChatE /> */}
-      {/* <ChatPretty /> */}
+
 
       <MultiChatSocket {...chatProps} />
 
@@ -90,74 +91,54 @@ function App() {
         <Routes>
           <Route path="/auth" element={<Login />} />
           <Route path="/chats" element={
-            <MultiChatWindow  {...chatProps} style={{ height: '100vh', flexGrow: 1 }}
+            <MultiChatWindow  {...chatProps}
+              style={{ height: '100vh', flexGrow: 1 }}
+              renderChatHeader={({ chat }) => <GroupChatTop chat={chatProps.chat} />}
 
-              renderChatSettings={(chatAppState) => (
-                <div>
-                  <MemberList
-                    projectID={projectId}
-                    chatID={chatAppState.activeChat}
-                    userName={username}
-                    userSecret={secret}
-                    onDirectChatCreated={handleDirectChatCreated}
-                    chatLogic={chatProps}
-                  />
-                </div>
-              )}
+
             />
+
             // <FullChatEngine />
           } />
           <Route path="/groups" element={
-            <MultiChatWindow
-              chats={chatProps.chats}
-              messages={chatProps.messages}
-              activeChatId={chatProps.activeChatId}
-              username={chatProps.username}
-              peopleToInvite={chatProps.peopleToInvite}
-              hasMoreChats={chatProps.hasMoreChats}
-              hasMoreMessages={chatProps.hasMoreMessages}
-              onChatFormSubmit={chatProps.onChatFormSubmit}
-              onChatCardClick={chatProps.onChatCardClick}
-              onChatLoaderShow={chatProps.onChatLoaderShow}
-              onMessageLoaderShow={chatProps.onMessageLoaderShow}
-              onMessageLoaderHide={chatProps.onMessageLoaderHide}
-              onBottomMessageShow={chatProps.onBottomMessageShow}
-              onBottomMessageHide={chatProps.onBottomMessageHide}
-              onMessageFormSubmit={chatProps.onMessageFormSubmit}
-              onInvitePersonClick={chatProps.onInvitePersonClick}
-              onRemovePersonClick={chatProps.onRemovePersonClick}
-              onDeleteChatClick={chatProps.onDeleteChatClick}
-              style={{ height: '100vh', flexGrow: 1 }}
-              renderChatList={(chatAppState) => (
-                <DirectChatList
-                  projectID={projectId}
-                  userName={username}
-                  userSecret={secret}
-                  {...chatAppState}
-                />
-              )}
+            // <MultiChatWindow
+            //   chats={chatProps.chats}
+            //   messages={chatProps.messages}
+            //   activeChatId={chatProps.activeChatId}
+            //   username={chatProps.username}
+            //   peopleToInvite={chatProps.peopleToInvite}
+            //   hasMoreChats={chatProps.hasMoreChats}
+            //   hasMoreMessages={chatProps.hasMoreMessages}
+            //   onChatFormSubmit={chatProps.onChatFormSubmit}
+            //   onChatCardClick={chatProps.onChatCardClick}
+            //   onChatLoaderShow={chatProps.onChatLoaderShow}
+            //   onMessageLoaderShow={chatProps.onMessageLoaderShow}
+            //   onMessageLoaderHide={chatProps.onMessageLoaderHide}
+            //   onBottomMessageShow={chatProps.onBottomMessageShow}
+            //   onBottomMessageHide={chatProps.onBottomMessageHide}
+            //   onMessageFormSubmit={chatProps.onMessageFormSubmit}
+            //   onInvitePersonClick={chatProps.onInvitePersonClick}
+            //   onRemovePersonClick={chatProps.onRemovePersonClick}
+            //   onDeleteChatClick={chatProps.onDeleteChatClick}
+            //   style={{ height: '100vh', flexGrow: 1 }}
+            //   renderChatList={(chatAppState) => (
+            //     <DirectChatList
+            //       projectID={projectId}
+            //       userName={username}
+            //       userSecret={secret}
+            //       {...chatAppState}
+            //     />
+            //   )}
 
-            />} />
+
+            // />
+            <DirectChat />
+          } />
 
 
 
           <Route path="/Knowledge-base" element={<KnowledgeBase />} />
         </Routes>
-        {/* <RecentMessageContext.Provider value={{ recentMessage, setRecentMessage, messageTime, setMessageTime }}> */}
-
-        {/* <Chatbar /> */}
-        {/* <Chat /> */}
-
-
-        {/* <ChatAse /> */}
-        {/* <Chat /> */}
-        {/* <Profile /> */}
-        {/* <GroupChatBar /> */}
-        {/* <GroupChat /> */}
-
-        {/* </RecentMessageContext.Provider> */}
-
-
 
 
       </div>
@@ -165,6 +146,11 @@ function App() {
     </Router>
 
     <Sign_Up />
+
+    {/* <AudioChat /> */}
+
+    <AudioCall />
+
 
 
   </>)

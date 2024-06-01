@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import * as Yup from 'yup';
 import axios from 'axios';
 import { useState } from 'react';
-import Context from '../../contexts/AuthContext'
+// import Context from '../../contexts/AuthContext'
 
 const Login = () => {
 
@@ -14,7 +14,7 @@ const Login = () => {
 
     });
 
-    const { username, setUsername, password, setPassword } = useContext(Context)
+    // const { username, setUsername, password, setPassword } = useContext(Context)
 
     const [validationErrors, setValidationErrors] = useState({});
 

@@ -54,7 +54,7 @@ const Sign_Up = () => {
                     { title },
                     {
                         headers: {
-                            'Private-Key': '7c08cb66-85b5-489b-a0d1-1ff26f7f1e5d', // Replace with your actual key
+                            'Private-Key': import.meta.env.VITE_PROJECT_KEY, // Replace with your actual key
                         },
                     }
                 );
@@ -129,7 +129,7 @@ const Sign_Up = () => {
                 { username },
                 {
                     headers: {
-                        'Private-Key': '7c08cb66-85b5-489b-a0d1-1ff26f7f1e5d', // Replace with your actual key
+                        'Private-Key': import.meta.env.VITE_PROJECT_KEY, // Replace with your actual key
                     },
                 }
             );
@@ -155,7 +155,7 @@ const Sign_Up = () => {
                 { username: formData.username, secret: formData.password, first_name: formData.firstName, last_name: formData.lastName, email: formData.email },
                 {
                     headers: {
-                        'Private-Key': "7c08cb66-85b5-489b-a0d1-1ff26f7f1e5d", // Replace with your actual key
+                        'Private-Key': import.meta.env.VITE_PROJECT_KEY, // Replace with your actual key
                     },
                 }
             ).then(
@@ -169,13 +169,16 @@ const Sign_Up = () => {
                     'https://api.chatengine.io/chats/',
                     {
                         headers: {
-                            'Private-Key': '7c08cb66-85b5-489b-a0d1-1ff26f7f1e5d', // Replace with your actual key
+                            'Private-Key': import.meta.env.VITE_PROJECT_KEY, // Replace with your actual key
                         },
                     }
                 );
 
+
+                console.log('Response object:', response); // Log the entire response object
+
                 if (response.status === 200) {
-                    console.log('Chats fetched successfully:', response.data);
+                    console.log('Chats fetched successfully:', import.meta.env.VITE_PROJECT_KEY, response.data);
 
                     // Iterate through the array of tech stack names
                     for (const techStack of formData.techStacks) {

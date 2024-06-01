@@ -1,7 +1,16 @@
 import React, { useState, useRef } from 'react'
 import Avatar from '../main/avatar'
 import Profile from '../main/Profile';
-const chattop = () => {
+
+const chattop = ({ chat }) => {
+
+    if (!chat || !chat.title) {
+        return null;
+    }
+
+    // Extract chat title
+    const title = chat.title;
+
 
 
     const [isConnected, setIsConnected] = useState(false)
@@ -71,7 +80,7 @@ const chattop = () => {
                                                 </div>
                                                 <div className="flex-1 pl-1 mr-16">
                                                     <div className="font-medium dark:text-white">
-                                                        Jean Marc
+                                                        {title}
                                                     </div>
                                                     <div className="text-sm text-gray-600 dark:text-gray-200">
                                                         online

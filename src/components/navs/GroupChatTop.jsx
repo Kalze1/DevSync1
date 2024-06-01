@@ -2,16 +2,20 @@ import React from 'react'
 import { Avatar } from '../ui/avatar'
 import ChatBar from '../main/chatbar'
 
-const GroupChatTop = () => {
+const GroupChatTop = ({ chat }) => {
+
+    if (!chat || !chat.title) {
+        return null;
+    }
+
+    // Extract chat title
+    const title = chat.title;
     return (
         <div>
             <nav className="bg-white dark:bg-gray-800 h-20  shadow ">
                 <div className="px-8 mx-auto max-w-7xl">
                     <div className="flex items-center justify-between h-16">
                         <div className=" flex items-center">
-                            <a className="flex-shrink-0" href="/">
-
-                            </a>
 
 
                             <div className="hidden md:block" onClick={() => document.getElementById('group_members').showModal()}>
@@ -100,11 +104,11 @@ const GroupChatTop = () => {
                                     </div>
                                 </dialog>
                                 <div className="flex items-baselines space-x-4">
-                                    <a className="text-gray-300  hover:text-gray-800 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium" href="/#">
+                                    <a className="  hover:text-gray-800 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                                         <li className="flex flex-row">
                                             <div className="flex items-center flex-1 p-4 cursor-pointer select-none">
                                                 <div className="flex flex-col items-center justify-center w-10 h-10 mr-4">
-                                                    <a href="#" className="relative block">
+                                                    <a className="relative block">
                                                         <div className="avatar">
                                                             <div className="w-12 rounded-full">
                                                                 <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
@@ -113,8 +117,8 @@ const GroupChatTop = () => {
                                                     </a>
                                                 </div>
                                                 <div className="flex-1 pl-1 mr-16">
-                                                    <div className="font-medium dark:text-white">
-                                                        React
+                                                    <div className="font-medium dark:text-black">
+                                                        {title}
                                                     </div>
                                                     <div className="text-sm text-gray-600 dark:text-gray-200">
                                                         700 members, 250 online
@@ -130,10 +134,7 @@ const GroupChatTop = () => {
                         </div>
                         <div className="block">
                             <div className="flex items-center ml-4 md:ml-6">
-                                <a href="https://github.com/Charlie85270/tail-kit" className="p-1 text-gray-400 rounded-full focus:outline-none hover:text-gray-200 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
 
-                                    <svg width="24px" height="24px" strokeWidth="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="#000000"><path d="M18.1182 14.702L14 15.5C11.2183 14.1038 9.5 12.5 8.5 10L9.26995 5.8699L7.81452 2L4.0636 2C2.93605 2 2.04814 2.93178 2.21654 4.04668C2.63695 6.83 3.87653 11.8765 7.5 15.5C11.3052 19.3052 16.7857 20.9564 19.802 21.6127C20.9668 21.8662 22 20.9575 22 19.7655L22 16.1812L18.1182 14.702Z" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                </a>
                                 <div className="relative ml-3">
                                     <div className="relative inline-block text-left">
                                         <div>
