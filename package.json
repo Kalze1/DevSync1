@@ -18,6 +18,7 @@
     "@radix-ui/react-toggle": "^1.0.3",
     "antd": "^5.17.3",
     "axios": "^1.6.8",
+    "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "emoji-mart": "^5.6.0",
@@ -31,7 +32,8 @@
     "react-router": "^6.23.1",
     "react-router-dom": "^6.23.1",
     "tailwind-merge": "^2.3.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",

@@ -1,6 +1,6 @@
 import React from 'react'
 
-const avatar = () => {
+const Avatar = () => {
     return (
         <div className="avatar">
             <div className="w-12 rounded-full">
@@ -12,4 +12,4 @@ const avatar = () => {
     )
 }
 
-export default avatar
+export default Avatar

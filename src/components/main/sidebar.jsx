@@ -1,5 +1,5 @@
 import React from 'react'
-import Avatar from './avatar'
+import Avatar from './Avatar'
 
 import { Link } from 'react-router-dom'
 const sidebar = () => {

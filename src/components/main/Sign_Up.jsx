@@ -40,8 +40,6 @@ const Sign_Up = () => {
 
     const selectedValues = options.filter(option => selectedOptions.includes(option.value));
 
-
-
     const createChats = async () => {
         setIsLoading(true);
         setError(null);
@@ -54,7 +52,7 @@ const Sign_Up = () => {
                     { title },
                     {
                         headers: {
-                            'Private-Key': '7c08cb66-85b5-489b-a0d1-1ff26f7f1e5d', // Replace with your actual key
+                            'Private-Key': '3770e1f2-6e26-4c43-93b4-bd04f52fe949', // Replace with your actual key
                         },
                     }
                 );
@@ -64,7 +62,7 @@ const Sign_Up = () => {
             // Localhost server call
             await validationSchema.validate(formData, { abortEarly: false }); // Validate all fields at once
 
-            const response = await axios.post('http://localhost:3001/api/users', formData);
+            const response = await axios.post('http://localhost:5000/api/users', formData);
             console.log('Form Submitted Successfully:', response.data);
 
             // Handle successful submission (e.g., clear form, show success message)
@@ -93,11 +91,6 @@ const Sign_Up = () => {
         }
         console.log(formData);
     };
-
-
-
-
-
 
     const validateField = async (fieldName) => {
         try {
@@ -129,7 +122,7 @@ const Sign_Up = () => {
                 { username },
                 {
                     headers: {
-                        'Private-Key': '7c08cb66-85b5-489b-a0d1-1ff26f7f1e5d', // Replace with your actual key
+                        'Private-Key': '3770e1f2-6e26-4c43-93b4-bd04f52fe949', // Replace with your actual key
                     },
                 }
             );
@@ -142,84 +135,81 @@ const Sign_Up = () => {
         }
     };
 
+   // Modify the following API call in the handleSubmit function to use port 3001
     const handleSubmit = async (event) => {
-        event.preventDefault();
-        setIsLoading(true);
-        setError(null);
+    event.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    try {
+        // Chatengine API call
+
+        const userResponse = await axios.post(
+            'https://api.chatengine.io/users/',
+            { username: formData.username, secret: formData.password, first_name: formData.firstName, last_name: formData.lastName, email: formData.email },
+            {
+                headers: {
+                    'Private-Key': "3770e1f2-6e26-4c43-93b4-bd04f52fe949", // Replace with your actual key
+                },
+            }
+        ).then(
+            alert("user Registered successfully!")
+        )
+
+        console.log('User created:', userResponse.data); // Optional: Log user data
 
         try {
-            // Chatengine API call
-
-            const userResponse = await axios.post(
-                'https://api.chatengine.io/users/',
-                { username: formData.username, secret: formData.password, first_name: formData.firstName, last_name: formData.lastName, email: formData.email },
+            const response = await axios.get(
+                'https://api.chatengine.io/chats/',
                 {
                     headers: {
-                        'Private-Key': "7c08cb66-85b5-489b-a0d1-1ff26f7f1e5d", // Replace with your actual key
+                        'Private-Key': '3770e1f2-6e26-4c43-93b4-bd04f52fe949', // Replace with your actual key
                     },
                 }
-            ).then(
-                alert("user Registered successfully!")
-            )
+            );
 
-            console.log('User created:', userResponse.data); // Optional: Log user data
+            if (response.status === 200) {
+                console.log('Chats fetched successfully:', response.data);
 
-            try {
-                const response = await axios.get(
-                    'https://api.chatengine.io/chats/',
-                    {
-                        headers: {
-                            'Private-Key': '7c08cb66-85b5-489b-a0d1-1ff26f7f1e5d', // Replace with your actual key
-                        },
-                    }
-                );
-
-                if (response.status === 200) {
-                    console.log('Chats fetched successfully:', response.data);
-
-                    // Iterate through the array of tech stack names
-                    for (const techStack of formData.techStacks) {
-                        // Iterate through the array of chat objects
-                        for (const chat of response.data) {
-                            // Compare chat title with each tech stack name
-                            if (chat.title === techStack) {
-                                // Call the addUserToChat function with chat id and username
-                                await addUserToChat(chat.id, formData.username); // Adding await here to ensure the function completes
-                                console.log(`User added to chat with title: ${techStack} and ID: ${chat.id}`);
-                            }
+                // Iterate through the array of tech stack names
+                for (const techStack of formData.techStacks) {
+                    // Iterate through the array of chat objects
+                    for (const chat of response.data) {
+                        // Compare chat title with each tech stack name
+                        if (chat.title === techStack) {
+                            // Call the addUserToChat function with chat id and username
+                            await addUserToChat(chat.id, formData.username); // Adding await here to ensure the function completes
+                            console.log(`User added to chat with title: ${techStack} and ID: ${chat.id}`);
                         }
                     }
-                } else {
-                    console.error('Error fetching chats:', response.statusText);
                 }
-            } catch (error) {
-                console.error('Error fetching chats:', error);
-            }
-
-
-
-
-
-
-            // Localhost server call
-            await validationSchema.validate(formData, { abortEarly: false }); // Validate all fields at once
-
-            const response = await axios.post('http://localhost:3001/api/users', formData);
-            console.log('Form Submitted Successfully:', response.data);
-
-            // Handle successful submission (e.g., clear form, show success message)
-        } catch (error) {
-            if (error.name === 'ValidationError') {
-                console.error('Validation Errors:', error.errors);
-                // You can display these errors to the user (e.g., show error messages next to each field)
             } else {
-                console.error('Error submitting form:', error);
-                // Handle other errors
+                console.error('Error fetching chats:', response.statusText);
             }
-        } finally {
-            setIsLoading(true);
+        } catch (error) {
+            console.error('Error fetching chats:', error);
         }
-    };
+
+        // Localhost server call
+        await validationSchema.validate(formData, { abortEarly: false }); // Validate all fields at once
+
+        const response = await axios.post('http://localhost:3001/api/users', formData); // Updated port
+        console.log('Form Submitted Successfully:', response.data);
+
+        // Handle successful submission (e.g., clear form, show success message)
+    } catch (error) {
+        if (error.name === 'ValidationError') {
+            console.error('Validation Errors:', error.errors);
+            // You can display these errors to the user (e.g., show error messages next to each field)
+        } else {
+            console.error('Error submitting form:', error);
+            // Handle other errors
+        }
+    } finally {
+        setIsLoading(true);
+    }
+};
+
 
     return (
         <div className="max-w-md mx-auto mt-10 bg-white shadow-lg rounded-lg overflow-hidden">

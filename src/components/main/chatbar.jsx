@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import Avatar from './avatar'
+import Avatar from './Avatar'
 import { RecentMessageContext } from '@/contexts/RecentMessageContext'
 
 

@@ -1,113 +1,96 @@
+import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import axios from 'axios';
 
-import { useState, useEffect } from "react"
-
-
-import "./App.css"
-import Chatbar from "./components/main/chatbar"
-import Chat from "./components/main/chat"
-// import Navbar from "./components/main/navbar"
-import Sidebar from "./components/main/sidebar"
-import Demo from "./components/main/demo"
-import KnowledgeBase from "./components/main/KnowledgeBase"
-import GroupChat from "./components/main/GroupChat"
-import GroupChatBar from "./components/main/GroupChatBar"
-import { RecentMessageContext } from "./contexts/RecentMessageContext"
-import Profile from "./components/main/Profile"
-import ChatAse from "./components/main/ChatAse"
-import ChatE from "./components/main/ChatE"
-import { ChatEngine, ChatEngineWrapper, Socket, ChatFeed, ChatSettings, ChatList } from "react-chat-engine"
-import { PrettyChatWindow } from "react-chat-engine-pretty"
-import AuthPage from "./components/main/AuthPage";
-import { useMultiChatLogic, MultiChatSocket, MultiChatWindow, getOrCreateChat, } from "react-chat-engine-advanced"
-
-import Sign_Up from "./components/main/Sign_Up"
-import Login from "./components/main/Login"
-import FullTemplate from "./components/main/FullTemplate"
-import Navbar from "./components/navs/Navbar"
-import ChatPretty from "./components/main/ChatPretty"
-import FullChatEngine from "./components/main/FullChatEngine"
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-// import DirectChatList from "./components/main/DirectChatList"
-import DirectChatList from "./components/main/DirectChatList"
-// import ChatCard from "./components/ChatsPage/ChatCard"
-import MemberList from "./components/main/MemberList"
+import "./App.css";
+import Chatbar from "./components/main/chatbar";
+import Chat from "./components/main/chat";
+import Sidebar from "./components/main/sidebar";
+import Demo from "./components/main/demo";
+import KnowledgeBase from "./components/main/KnowledgeBase";
+import GroupChat from "./components/main/GroupChat";
+import GroupChatBar from "./components/main/GroupChatBar";
+import { RecentMessageContext } from "./contexts/RecentMessageContext";
+// import Profile from "./components/main/Profile";
+import ChatAse from "./components/main/ChatAse";
+import ChatE from "./components/main/ChatE";
+import { ChatEngine, ChatEngineWrapper, Socket, ChatFeed, ChatSettings, ChatList } from "react-chat-engine";
+import { PrettyChatWindow } from "react-chat-engine-pretty";
+import { useMultiChatLogic, MultiChatSocket, MultiChatWindow, getOrCreateChat } from "react-chat-engine-advanced";
+import Sign_Up from "./components/main/Sign_Up";
+import Login from "./components/main/Login";
+import Navbar from "./components/navs/Navbar";
+import ChatPretty from "./components/main/ChatPretty";
+import FullChatEngine from "./components/main/FullChatEngine";
+import DirectChatList from "./components/main/DirectChatList";
+import MemberList from "./components/main/MemberList";
 
 function App() {
-
-  const [recentMessage, setRecentMessage] = useState("recent message")
-  const [messageTime, setMessageTime] = useState(null)
+  const [recentMessage, setRecentMessage] = useState("recent message");
+  const [messageTime, setMessageTime] = useState(null);
   const [user, setUser] = useState(undefined);
-
   const [chats, setChats] = useState([]);
-
-
-
   const [selectedChat, setSelectedChat] = useState(null);
+  
+  console.log(user)
 
   const handleDirectChatCreated = (chat) => {
     setSelectedChat(chat.id);
   };
 
-
-
-  const projectId = "791f28ff-082b-47d7-96c0-6a79afd19040";
-  const username = "Tekuarit";
-  const secret = "Dagi9113";
+  const projectId = "b7fa4655-c0a7-4b26-8d55-0e2a6f3af468";
 
   useEffect(() => {
-    getOrCreateChat(
-      { projectId, username, secret },
-      {},
-      (chats) => {
-        const directChats = chats.filter(chat => chat.is_direct_chat);
-        setChats(directChats);
-      },
-      (error) => {
-        console.error('Error fetching chats:', error);
-      }
-    );
-  }, [projectId, username, secret]);
-  const chatProps = useMultiChatLogic(projectId, username, secret);
+    if (user) {
+      getOrCreateChat(
+        { projectId, username: user.username, secret: user.password },
+        {},
+        (chats) => {
+          const directChats = chats.filter(chat => chat.is_direct_chat);
+          setChats(directChats);
+        },
+        (error) => {
+          console.error('Error fetching chats:', error);
+        }
+      );
+    }
+  }, [projectId, user]);
 
+  const chatProps = useMultiChatLogic(projectId, user?.username, user?.secret);
 
-
-  return (<>
-
+  return (
     <Router>
-
-      {/* <Login /> */}
-      {/* <FullTemplate /> */}
-      {/* <Navbar /> */}
-      {/* <Navbar /> */}
-      {/* <ChatE /> */}
-      {/* <ChatPretty /> */}
-
-      <MultiChatSocket {...chatProps} />
-
-      <div className="flex" style={{ height: '100vh', fontFamily: "sans-serif" }}>
-
-        <Sidebar style={{ minWidth: '200px' }} />
-        <Routes>
-          <Route path="/auth" element={<Login />} />
-          <Route path="/chats" element={
-            <MultiChatWindow  {...chatProps} style={{ height: '100vh', flexGrow: 1 }}
-
+      <Routes>
+        <Route path="/" element={<Login setUser={setUser} />} />
+        <Route path="/side" element={<Sidebar style={{ minWidth: '200px' }} />} />
+        <Route path="/chats" element={
+          user ? (
+            <MultiChatWindow
+              
+            projectId={projectId}
+            username={user.userName}
+            secret={user.secret}
+              style={{ height: '100vh', flexGrow: 1 }}
               renderChatSettings={(chatAppState) => (
                 <div>
                   <MemberList
+                    
                     projectID={projectId}
                     chatID={chatAppState.activeChat}
-                    userName={username}
-                    userSecret={secret}
+                    userName={user.username}
+                    userSecret={user.password}
                     onDirectChatCreated={handleDirectChatCreated}
                     chatLogic={chatProps}
                   />
                 </div>
               )}
             />
-            // <FullChatEngine />
-          } />
-          <Route path="/groups" element={
+          ) : (
+            <div>Please log in to access the chats.</div>
+          )
+        } />
+        <Route path="/groups" element={
+          user ? (
             <MultiChatWindow
               chats={chatProps.chats}
               messages={chatProps.messages}
@@ -131,48 +114,20 @@ function App() {
               renderChatList={(chatAppState) => (
                 <DirectChatList
                   projectID={projectId}
-                  userName={username}
-                  userSecret={secret}
+                  userName={user.username}
+                  userSecret={user.password}
                   {...chatAppState}
                 />
               )}
-
-            />} />
-
-
-
-          <Route path="/Knowledge-base" element={<KnowledgeBase />} />
-        </Routes>
-        {/* <RecentMessageContext.Provider value={{ recentMessage, setRecentMessage, messageTime, setMessageTime }}> */}
-
-        {/* <Chatbar /> */}
-        {/* <Chat /> */}
-
-
-        {/* <ChatAse /> */}
-        {/* <Chat /> */}
-        {/* <Profile /> */}
-        {/* <GroupChatBar /> */}
-        {/* <GroupChat /> */}
-
-        {/* </RecentMessageContext.Provider> */}
-
-
-
-
-      </div>
-
+            />
+          ) : (
+            <div>Please log in to access the groups.</div>
+          )
+        } />
+        <Route path="/Knowledge-base" element={<KnowledgeBase />} />
+      </Routes>
     </Router>
-
-    <Sign_Up />
-
-
-  </>)
-
+  );
 }
 
-
-
-
-
-export default App
+export default App;
