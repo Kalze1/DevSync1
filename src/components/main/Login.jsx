@@ -43,9 +43,10 @@ const Login = ({ setUser }) => {
 
             const response = await axios.post('http://localhost:3001/api/login', filteredData);
             console.log(filteredData)
-            console.log('user found successfully use id:', response.data.user);
-            if (response.data.user.username === formData.username){
-                setUser(response.data.user);
+            console.log('user found successfully use id:', response.data);
+            if (response.status = 200){
+                setUser(formData);
+                console.log(formData)
                 navigate('/chats');
                 console.log("ullllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllser")
                 console.log("loading ...")

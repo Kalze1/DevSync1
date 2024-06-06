@@ -10,7 +10,6 @@ const QuizQuestions = ({ languageId }) => {
   const [questions, setQuestions] = useState([]);
 
 
-
   useEffect(() => {
   const fetchQuestions = async () => {
     
