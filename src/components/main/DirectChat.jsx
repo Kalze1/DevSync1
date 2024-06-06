@@ -1,54 +1,57 @@
-// src/components/Chat.js
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useMultiChatLogic, ChatList } from 'react-chat-engine-advanced';
+import chat from './chat';
 import axios from 'axios';
-import {
-    MultiChatWindow,
-    MultiChatSocket,
-    useMultiChatLogic,
-} from 'react-chat-engine-advanced';
-// import { projectID, userName, userSecret } from '../ChatEngineConfig';
-import SearchUsers from '../ChatsPage/SearchUser';
+const CustomChatList = (props) => {
+    const { chats } = useMultiChatLogic();
 
-const Chat = () => {
-    const [chat, setChat] = useState(null);
+    const directChats = chats.filter(chat => chat.is_direct_chat);
 
-    const handleSelectUser = async (user) => {
-        try {
-            const response = await axios.post(
-                `https://api.chatengine.io/chats/`,
-                { usernames: [user.username], is_direct_chat: true },
-                {
-                    headers: {
-                        'Project-ID': import.meta.env.VITE_PROJECT_ID,
-                        'User-Name': 'DagiB',
-                        'User-Secret': 'Dagi1234',
-                    },
-                }
-            );
-            setChat(response.data);
-        } catch (error) {
-            console.error('Error creating direct chat:', error);
-        }
-    };
+    const [fetchedChats, setFetchedChats] = useState([])
 
-    const chatProps = useMultiChatLogic({
-        projectID: import.meta.env.VITE_PROJECT_ID,
-        userName: 'DagiB',
-        userSecret: 'Dagi1234',
-    });
+    const [Dms, setDms] = useState([fetchedChats.filter(chat => chat.is_direct_chat)])
 
+
+    useEffect(() => {
+        const fetchChats = async () => {
+            try {
+                const response = await axios.get(
+                    'https://api.chatengine.io/chats/',
+                    {
+                        headers: {
+
+                            'Project-ID': import.meta.env.VITE_PROJECT_ID,
+                            'User-Name': 'DagiB',
+                            'User-Secret': 'Dagi1234'
+                        },
+                    }
+                );
+
+                console.log('Chats fetched successfully(for DM):', response.data);
+                console.log("dms: ", Dms);
+                setFetchedChats(response.data)
+                // console.log('fetched Chats ', fetchedChats);
+                const directMessages = fetchedChats.filter(chat => chat.is_direct_chat)
+                setDms(fetchedChats.filter(chat => chat.is_direct_chat))
+                console.log('dms: ', Dms);
+            } catch (error) {
+                console.error('Error fetching chats:', error);
+            }
+        };
+
+        fetchChats()
+        console.log();
+
+    }, [])
     return (
         <div>
-            <SearchUsers onSelectUser={handleSelectUser} />
-            {chat && (
-                <>
-                    <MultiChatSocket {...chatProps} chatId={chat.id} />
-                    <MultiChatWindow {...chatProps} chatId={chat.id}
-                        style={{ height: '100vh', flexGrow: 1 }} />
-                </>
-            )}
+            {Dms.map((chat, index) => (
+
+                <div>{chat}</div>
+
+            ))}
         </div>
     );
 };
 
-export default Chat;
+export default CustomChatList;

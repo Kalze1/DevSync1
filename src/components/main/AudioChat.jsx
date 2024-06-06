@@ -1,117 +1,137 @@
 import React, { useState, useRef, useEffect } from 'react';
-import io from 'socket.io-client';
-import Peer from 'simple-peer';
+import AgoraRTC from 'agora-rtc-sdk-ng';
+import { io } from 'socket.io-client';
 
-// Connect to the backend server
 const socket = io('http://localhost:5000');
 
-function App() {
-    const [me, setMe] = useState('');
-    const [stream, setStream] = useState(null);
-    const [receivingCall, setReceivingCall] = useState(false);
-    const [caller, setCaller] = useState('');
-    const [callerSignal, setCallerSignal] = useState(null);
-    const [callAccepted, setCallAccepted] = useState(false);
+const AudioCall = () => {
+    const [roomid, setRoomid] = useState('main');
+    const [audioTracks, setAudioTracks] = useState({
+        localAudioTracks: null,
+        remoteAudioTracks: {},
+    });
+    const [userWrappers, setUserWrappers] = useState([]);
+    const [isJoined, setIsJoined] = useState(false);
+    const [incomingCall, setIncomingCall] = useState(false);
+    const [callerUid, setCallerUid] = useState(null);
+    const [isCaller, setIsCaller] = useState(false);
 
-    const myAudio = useRef();
-    const userAudio = useRef();
-    const connectionRef = useRef();
+    const appid = '5511b0a0a7364bcf91a13238d4590167';
+    const token = null;
+    const rtcUid = Math.floor(Math.random() * 2032);
+
+    const rtcClient = useRef(null);
 
     useEffect(() => {
-        // Get user media (audio)
-        navigator.mediaDevices.getUserMedia({ video: false, audio: true }).then((stream) => {
-            setStream(stream);
-            if (myAudio.current) {
-                myAudio.current.srcObject = stream;
+        rtcClient.current = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+
+        rtcClient.current.on('user-joined', handleUserJoined);
+        rtcClient.current.on('user-published', handleUserPublished);
+        rtcClient.current.on('user-left', handleUserLeft);
+
+        socket.on('incoming_call', (data) => {
+            if (!isJoined && !isCaller) {
+                setIncomingCall(true);
+                setCallerUid(data.uid);
             }
         });
 
-        // Set the user's socket ID
-        socket.on('me', (id) => {
-            setMe(id);
-        });
-
-        // Handle incoming call
-        socket.on('callUser', (data) => {
-            setReceivingCall(true);
-            setCaller(data.from);
-            setCallerSignal(data.signal);
-        });
-    }, []);
-
-    const callUser = (id) => {
-        const peer = new Peer({
-            initiator: true,
-            trickle: false,
-            stream: stream,
-        });
-
-        peer.on('signal', (data) => {
-            socket.emit('callUser', { userToCall: id, signalData: data, from: me });
-        });
-
-        peer.on('stream', (stream) => {
-            if (userAudio.current) {
-                userAudio.current.srcObject = stream;
+        return () => {
+            if (isJoined) {
+                leaveCall();
             }
-        });
+        };
+    }, [isJoined, isCaller]);
 
-        socket.on('callAccepted', (signal) => {
-            setCallAccepted(true);
-            peer.signal(signal);
-        });
+    const initRtc = async () => {
+        await rtcClient.current.join(appid, roomid, token, rtcUid);
+        const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+        setAudioTracks((prevTracks) => ({
+            ...prevTracks,
+            localAudioTracks: localAudioTrack,
+        }));
+        rtcClient.current.publish(localAudioTrack);
 
-        connectionRef.current = peer;
+        const newUserWrapper = (
+            <div key={rtcUid} id={rtcUid}>
+                <p>{rtcUid}</p>
+            </div>
+        );
+        setUserWrappers((prevWrappers) => [...prevWrappers, newUserWrapper]);
+        setIsJoined(true);
+
+        // Notify other users about the call
+        socket.emit('call', { uid: rtcUid });
+        setIsCaller(true);
     };
 
-    const answerCall = () => {
-        setCallAccepted(true);
-        const peer = new Peer({
-            initiator: false,
-            trickle: false,
-            stream: stream,
-        });
+    const handleUserJoined = (user) => {
+        console.log('new user joined: ', user);
 
-        peer.on('signal', (data) => {
-            socket.emit('answerCall', { signal: data, to: caller });
-        });
+        const newUserWrapper = (
+            <div key={user.uid} id={user.uid}>
+                <p>{user.uid}</p>
+            </div>
+        );
+        setUserWrappers((prevWrappers) => [...prevWrappers, newUserWrapper]);
+    };
 
-        peer.on('stream', (stream) => {
-            if (userAudio.current) {
-                userAudio.current.srcObject = stream;
-            }
-        });
+    const handleUserPublished = async (user, mediaType) => {
+        await rtcClient.current.subscribe(user, mediaType);
+        if (mediaType === 'audio') {
+            audioTracks.remoteAudioTracks[user.uid] = user.audioTrack;
+            user.audioTrack.play();
+        }
+    };
 
-        peer.signal(callerSignal);
-        connectionRef.current = peer;
+    const handleUserLeft = (user) => {
+        console.log('user left: ', user);
+        delete audioTracks.remoteAudioTracks[user.uid];
+        setUserWrappers((prevWrappers) =>
+            prevWrappers.filter((wrapper) => wrapper.key !== user.uid.toString())
+        );
+
+        // If the other user leaves, end the call for this user as well
+        leaveCall();
+    };
+
+    const leaveCall = async () => {
+        if (audioTracks.localAudioTracks) {
+            audioTracks.localAudioTracks.stop();
+            audioTracks.localAudioTracks.close();
+        }
+
+        rtcClient.current.unpublish();
+        await rtcClient.current.leave();
+        setIsJoined(false);
+        setUserWrappers([]);
+        setIncomingCall(false);
+        setIsCaller(false);
+    };
+
+    const acceptCall = () => {
+        setIncomingCall(false);
+        initRtc();
     };
 
     return (
-        <div className="App">
-            <h1>Audio Chat Application</h1>
-            <div>
-                <audio playsInline muted ref={myAudio} autoPlay />
-                <audio playsInline ref={userAudio} autoPlay />
-            </div>
-            <p>Your ID: {me}</p>
-            <div>
-                {receivingCall && !callAccepted ? (
-                    <div>
-                        <h1>{caller} is calling...</h1>
-                        <button onClick={answerCall}>Answer</button>
-                    </div>
-                ) : null}
-            </div>
-            <div>
-                <input
-                    type="text"
-                    placeholder="ID to call"
-                    onChange={(e) => setCaller(e.target.value)}
-                />
-                <button onClick={() => callUser(caller)}>Call</button>
-            </div>
-        </div>
+        <>
+            <button onClick={initRtc} disabled={isJoined || incomingCall}>
+                Enter room now
+            </button>
+            {/* {userWrappers} */}
+            <br />
+            <button onClick={leaveCall} disabled={!isJoined}>
+                End call
+            </button>
+            {incomingCall && (
+                <div>
+                    <p>Incoming call from {callerUid}</p>
+                    <button onClick={acceptCall}>Accept</button>
+                </div>
+            )}
+        </>
     );
-}
+};
 
-export default App;
+export default AudioCall;

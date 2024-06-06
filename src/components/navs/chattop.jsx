@@ -1,6 +1,11 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import Avatar from '../main/avatar'
 import Profile from '../main/Profile';
+import AudioCall from '../ChatsPage/AudioCall';
+import AgoraRTC from 'agora-rtc-sdk-ng';
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:5000');
 
 const chattop = ({ chat }) => {
 
@@ -21,7 +26,126 @@ const chattop = ({ chat }) => {
     const intervalIdRef = useRef(null);
 
 
+    const [roomid, setRoomid] = useState('main');
+    const [audioTracks, setAudioTracks] = useState({
+        localAudioTracks: null,
+        remoteAudioTracks: {},
+    });
+    const [userWrappers, setUserWrappers] = useState([]);
+    const [isJoined, setIsJoined] = useState(false);
+    const [incomingCall, setIncomingCall] = useState(false);
+    const [callerUid, setCallerUid] = useState(null);
+    const [isCaller, setIsCaller] = useState(false);
 
+    const appid = '5511b0a0a7364bcf91a13238d4590167';
+    const token = null;
+    const rtcUid = Math.floor(Math.random() * 2032);
+
+    const rtcClient = useRef(null);
+
+    useEffect(() => {
+        rtcClient.current = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+
+        rtcClient.current.on('user-joined', handleUserJoined);
+        rtcClient.current.on('user-published', handleUserPublished);
+        rtcClient.current.on('user-left', handleUserLeft);
+
+        socket.on('incoming_call', (data) => {
+            if (!isJoined && !isCaller) {
+                setIncomingCall(true);
+                setCallerUid(data.uid);
+            }
+        });
+
+        socket.on('call_ended', (data) => {
+            if (isJoined) {
+                leaveCall();
+            }
+        });
+
+        return () => {
+            if (isJoined) {
+                leaveCall();
+            }
+        };
+    }, [isJoined, isCaller]);
+
+    const initRtc = async () => {
+        await rtcClient.current.join(appid, roomid, token, rtcUid);
+        const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+        setAudioTracks((prevTracks) => ({
+            ...prevTracks,
+            localAudioTracks: localAudioTrack,
+        }));
+        rtcClient.current.publish(localAudioTrack);
+
+        const newUserWrapper = (
+            <div key={rtcUid} id={rtcUid}>
+                <p>{rtcUid}</p>
+            </div>
+        );
+        setUserWrappers((prevWrappers) => [...prevWrappers, newUserWrapper]);
+        setIsJoined(true);
+
+        // Notify other users about the call
+        socket.emit('call', { uid: rtcUid });
+        setIsCaller(true);
+    };
+
+    const handleUserJoined = (user) => {
+        console.log('new user joined: ', user);
+
+        const newUserWrapper = (
+            <div key={user.uid} id={user.uid}>
+                <p>{user.uid}</p>
+            </div>
+        );
+        setUserWrappers((prevWrappers) => [...prevWrappers, newUserWrapper]);
+    };
+
+    const handleUserPublished = async (user, mediaType) => {
+        await rtcClient.current.subscribe(user, mediaType);
+        if (mediaType === 'audio') {
+            audioTracks.remoteAudioTracks[user.uid] = user.audioTrack;
+            user.audioTrack.play();
+        }
+    };
+
+    const handleUserLeft = (user) => {
+        console.log('user left: ', user);
+        delete audioTracks.remoteAudioTracks[user.uid];
+        setUserWrappers((prevWrappers) =>
+            prevWrappers.filter((wrapper) => wrapper.key !== user.uid.toString())
+        );
+
+        // If the other user leaves, end the call for this user as well
+        leaveCall();
+    };
+
+    const leaveCall = async () => {
+        if (audioTracks.localAudioTracks) {
+            audioTracks.localAudioTracks.stop();
+            audioTracks.localAudioTracks.close();
+        }
+
+        if (isJoined) {
+            rtcClient.current.unpublish();
+            await rtcClient.current.leave();
+        }
+
+        setIsJoined(false);
+        setUserWrappers([]);
+        setIncomingCall(false);
+        setIsCaller(false);
+
+        socket.emit('end_call', { uid: rtcUid });
+    };
+
+
+    const acceptCall = () => {
+        setIncomingCall(false);
+        initRtc();
+    };
 
 
     const handleClick = () => {
@@ -70,11 +194,11 @@ const chattop = ({ chat }) => {
 
                                     {/* You can open the modal using document.getElementById('ID').showModal() method */}
 
-                                    <a onClick={() => document.getElementById('profile').showModal()} className="text-gray-300  hover:text-gray-800 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium" href="/#">
+                                    <button onClick={() => document.getElementById('profile').showModal()} className="text-gray-300  hover:text-gray-800 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium" >
                                         <li className="flex flex-row">
                                             <div className="flex items-center flex-1 p-4 cursor-pointer select-none">
                                                 <div className="flex flex-col items-center justify-center w-10 h-10 mr-4">
-                                                    <a href="#" className="relative block">
+                                                    <a className="relative block">
                                                         <Avatar />
                                                     </a>
                                                 </div>
@@ -89,7 +213,7 @@ const chattop = ({ chat }) => {
 
                                             </div>
                                         </li>
-                                    </a>
+                                    </button>
 
                                     <dialog id="profile" className="modal">
                                         <div className="modal-box">
@@ -129,11 +253,7 @@ const chattop = ({ chat }) => {
 
                                             <div className='grid '>
                                                 <span className="loading loading-dots loading-lg ml-3"></span>
-                                                <div>
-                                                    {hours.toString().padStart(2, '0')}:
-                                                    {minutes.toString().padStart(2, '0')}:
-                                                    {seconds.toString().padStart(2, '0')}
-                                                </div>
+
                                             </div>
                                             <div className="avatar">
                                                 <div className="w-24 rounded-full ring ring-success ring-offset-base-100 ring-offset-2">
@@ -143,28 +263,78 @@ const chattop = ({ chat }) => {
 
                                         </div>
                                         <h3 className="font-bold text-lg text-center">
-                                            {isConnected ? <div>Connected</div> : <div>Connecting...</div>}
+                                            {/* {isConnected ? <div>Connected</div> : <div>Connecting...</div>} */}
                                         </h3>
                                         <div className="modal-action flex justify-center">
-                                            <form method="dialog">
-                                                {/* if there is a button, it will close the modal */}
-                                                <button className="btn btn-outline btn-error align-middle" onClick={handleStop}>End call</button>
-                                            </form>
-                                            <button className="btn btn-outline btn-success align-middle" onClick={handleClick}>
-                                                connect
+
+                                            {/* if there is a button, it will close the modal */}
+                                            <button className="btn btn-outline btn-success align-middle" onClick={initRtc} disabled={isJoined || incomingCall}>
+                                                call
 
                                             </button>
+
+                                            <form method="dialog">
+
+                                                <button className="btn btn-outline btn-error align-middle" onClick={leaveCall} >End call</button>
+
+                                            </form>
+
+
                                         </div>
                                     </div>
                                 </dialog>
 
+                                {incomingCall && (
+
+                                    <div className="modal-box w-1/3 max-w-5xl">
+                                        <div className="flex justify-center">
+                                            <div className="avatar">
+                                                <div className="w-24 rounded-full ring ring-success ring-offset-base-100 ring-offset-2">
+                                                    <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+                                        <br />
+
+                                        <p className="font-bold text-lg text-center">Incoming call from {callerUid}</p>
+                                        <div className="modal-action flex justify-center">
+                                            <form method="dialog">
+                                                {/* if there is a button, it will close the modal */}
+                                                <button className="btn btn-outline btn-success align-middle" onClick={acceptCall}>
+                                                    Accept
+
+                                                </button>
+                                            </form>
+
+                                            <button className="btn btn-outline btn-error align-middle" onClick={leaveCall} >End call</button>
+                                        </div>
+                                    </div>
+
+
+
+
+                                )}
+
+
+
+
                                 <div className="relative ml-3">
                                     <div className="relative inline-block text-left">
-                                        <div>
-                                            <button type="button" className="  flex items-center justify-center w-full rounded-md  px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-50 hover:bg-gray-50 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-gray-500" id="options-menu">
-                                                <svg width="24px" height="24px" viewBox="0 0 24 24" strokeWidth="1.5" fill="none" xmlns="http://www.w3.org/2000/svg" color="#000000"><path d="M17 17L21 21" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M3 11C3 15.4183 6.58172 19 11 19C13.213 19 15.2161 18.1015 16.6644 16.6493C18.1077 15.2022 19 13.2053 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11Z" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                            </button>
-                                        </div>
+                                        <details className="dropdown dropdown-left">
+                                            <summary className="m-1 btn btn-ghost">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
+                                                </svg>
+                                            </summary>
+                                            <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
+                                                <li><a>block user</a></li>
+                                                <li><a>Report user</a></li>
+                                            </ul>
+                                        </details>
+
 
                                     </div>
                                 </div>

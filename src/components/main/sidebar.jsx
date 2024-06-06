@@ -1,5 +1,6 @@
 import React from 'react'
 import Avatar from './avatar'
+import CurrentUser from './CurrentUser'
 
 import { Link } from 'react-router-dom'
 const sidebar = () => {
@@ -121,12 +122,30 @@ const sidebar = () => {
 
                     </li>
                 </ul>
-                <div className="mt-auto h-16 flex items-center w-full">
-                    <div className="h-16 w-10 mx-auto">
+                <div className="mt-auto h-16 flex items-center w-full text-gray-700">
+
+                    <div className="h-16 w-10 mx-auto" onClick={() => document.getElementById('my_profile').showModal()}>
+
+                        <dialog id="my_profile" className="modal">
+                            <div className="modal-box">
+                                <form method="dialog">
+                                    {/* if there is a button in form, it will close the modal */}
+                                    <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                                </form>
+                                <CurrentUser />
+                            </div>
+                        </dialog>
+
 
                         <Avatar />
 
+
                     </div>
+
+                    {/* You can open the modal using document.getElementById('ID').showModal() method */}
+
+
+
                 </div>
             </nav>
         </div>

@@ -1,28 +1,24 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import * as Yup from 'yup';
 import axios from 'axios';
-import { useState } from 'react';
-import Select from "react-select"
-
+import Select from 'react-select';
 const Sign_Up = () => {
-
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
         username: '',
         password: '',
+        confirmPassword: '',
         techStacks: [],
-        rating: '',
         email: '',
         github: '',
     });
 
-
-    const [chatTitles, setChatTitles] = useState([]);
+    const [validationErrors, setValidationErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [chatIds, setChatIds] = useState([])
-    const [selectedOptions, setSelectedOptions] = useState([]);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const options = [
         { value: 'react', label: 'react' },
@@ -36,68 +32,10 @@ const Sign_Up = () => {
         setFormData({ ...formData, techStacks: selectedValues });
     };
 
-    // console.log(selectedOptions);
-
-    const selectedValues = options.filter(option => selectedOptions.includes(option.value));
-
-
-
-    const createChats = async () => {
-        setIsLoading(true);
-        setError(null);
-
-        try {
-            // Chatengine API call
-            for (const title of formData.techStacks) {
-                await axios.post(
-                    'https://api.chatengine.io/chats/',
-                    { title },
-                    {
-                        headers: {
-                            'Private-Key': import.meta.env.VITE_PROJECT_KEY, // Replace with your actual key
-                        },
-                    }
-                );
-                console.log(`Chat created: ${title}`); // Optional: Log success message
-            }
-
-            // Localhost server call
-            await validationSchema.validate(formData, { abortEarly: false }); // Validate all fields at once
-
-            const response = await axios.post('http://localhost:3001/api/users', formData);
-            console.log('Form Submitted Successfully:', response.data);
-
-            // Handle successful submission (e.g., clear form, show success message)
-        } catch (error) {
-            if (error.name === 'ValidationError') {
-                console.error('Validation Errors:', error.errors);
-                // You can display these errors to the user (e.g., show error messages next to each field)
-            } else {
-                console.error('Error submitting form:', error);
-                // Handle other errors
-            }
-        } finally {
-            setIsLoading(true);
-        }
-    };
-
-    const [validationErrors, setValidationErrors] = useState({});
-
     const handleChange = (event) => {
         const { name, value } = event.target;
-        if (name === 'techStacks') {
-            const techStackList = value.split(/[, ]+/).filter(Boolean); // Split on commas and spaces, remove empty entries
-            setFormData({ ...formData, [name]: techStackList });
-        } else {
-            setFormData({ ...formData, [name]: value });
-        }
-        console.log(formData);
+        setFormData({ ...formData, [name]: value });
     };
-
-
-
-
-
 
     const validateField = async (fieldName) => {
         try {
@@ -112,15 +50,22 @@ const Sign_Up = () => {
         firstName: Yup.string().required('First Name is required'),
         lastName: Yup.string().required('Last Name is required'),
         username: Yup.string().required('Username is required'),
-        password: Yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
+        password: Yup.string()
+            .required('Password is required')
+            .matches(
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                'Password must contain at least one uppercase letter, one symbol, and be at least 8 characters long'
+            ),
+        confirmPassword: Yup.string()
+            .required('Confirm Password is required')
+            .oneOf([Yup.ref('password'), null], 'Passwords must match'),
         techStacks: Yup.array().of(Yup.string()).required('Tech Stacks are required'),
         email: Yup.string().email('Invalid email format').required('Email is required'),
         github: Yup.string(),
     });
 
-
     const addUserToChat = async (chatId, username) => {
-        setIsLoading(true); // Assuming you have an isLoading state for tracking request status
+        setIsLoading(true);
         setError(null);
 
         try {
@@ -133,7 +78,7 @@ const Sign_Up = () => {
                     },
                 }
             );
-            console.log(`User ${username} invited to chat ${chatId}`); // Optional: Log success message
+            console.log(`User ${username} invited to chat ${chatId}`);
         } catch (error) {
             setError(error);
             console.error('Error inviting user to chat:', error);
@@ -148,80 +93,72 @@ const Sign_Up = () => {
         setError(null);
 
         try {
-            // Chatengine API call
+            // Validate form data
+            await validationSchema.validate(formData, { abortEarly: false });
 
+            // ChatEngine API call to create user
             const userResponse = await axios.post(
                 'https://api.chatengine.io/users/',
-                { username: formData.username, secret: formData.password, first_name: formData.firstName, last_name: formData.lastName, email: formData.email },
+                {
+                    username: formData.username,
+                    secret: formData.password,
+                    first_name: formData.firstName,
+                    last_name: formData.lastName,
+                    email: formData.email
+                },
                 {
                     headers: {
                         'Private-Key': import.meta.env.VITE_PROJECT_KEY, // Replace with your actual key
                     },
                 }
-            ).then(
-                alert("user Registered successfully!")
-            )
+            );
 
-            console.log('User created:', userResponse.data); // Optional: Log user data
+            console.log('User created:', userResponse.data);
 
-            try {
-                const response = await axios.get(
-                    'https://api.chatengine.io/chats/',
-                    {
-                        headers: {
-                            'Private-Key': import.meta.env.VITE_PROJECT_KEY, // Replace with your actual key
-                        },
-                    }
-                );
-
-
-                console.log('Response object:', response); // Log the entire response object
-
-                if (response.status === 200) {
-                    console.log('Chats fetched successfully:', import.meta.env.VITE_PROJECT_KEY, response.data);
-
-                    // Iterate through the array of tech stack names
-                    for (const techStack of formData.techStacks) {
-                        // Iterate through the array of chat objects
-                        for (const chat of response.data) {
-                            // Compare chat title with each tech stack name
-                            if (chat.title === techStack) {
-                                // Call the addUserToChat function with chat id and username
-                                await addUserToChat(chat.id, formData.username); // Adding await here to ensure the function completes
-                                console.log(`User added to chat with title: ${techStack} and ID: ${chat.id}`);
-                            }
-                        }
-                    }
-                } else {
-                    console.error('Error fetching chats:', response.statusText);
+            // ChatEngine API call to fetch chats
+            const response = await axios.get(
+                'https://api.chatengine.io/chats/',
+                {
+                    headers: {
+                        'Private-Key': import.meta.env.VITE_PROJECT_KEY, // Replace with your actual key
+                    },
                 }
-            } catch (error) {
-                console.error('Error fetching chats:', error);
+            );
+
+            console.log('Chats fetched successfully:', response.data);
+
+            // Iterate through tech stacks and add user to corresponding chats
+            for (const techStack of formData.techStacks) {
+                for (const chat of response.data) {
+                    if (chat.title === techStack) {
+                        await addUserToChat(chat.id, formData.username);
+                        console.log(`User added to chat with title: ${techStack} and ID: ${chat.id}`);
+                    }
+                }
             }
 
-
-
-
-
-
             // Localhost server call
-            await validationSchema.validate(formData, { abortEarly: false }); // Validate all fields at once
-
-            const response = await axios.post('http://localhost:3001/api/users', formData);
-            console.log('Form Submitted Successfully:', response.data);
+            const localResponse = await axios.post('http://localhost:3001/api/users', formData);
+            console.log('Form Submitted Successfully:', localResponse.data);
 
             // Handle successful submission (e.g., clear form, show success message)
         } catch (error) {
             if (error.name === 'ValidationError') {
                 console.error('Validation Errors:', error.errors);
-                // You can display these errors to the user (e.g., show error messages next to each field)
             } else {
                 console.error('Error submitting form:', error);
-                // Handle other errors
             }
         } finally {
-            setIsLoading(true);
+            setIsLoading(false);
         }
+    };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const toggleConfirmPasswordVisibility = () => {
+        setShowConfirmPassword(!showConfirmPassword);
     };
 
     return (
@@ -229,13 +166,11 @@ const Sign_Up = () => {
             <div className="text-2xl py-4 px-6 bg-gray-900 text-white text-center font-bold uppercase">
                 Create Account
             </div>
-            <form onSubmit={handleSubmit} className="py-4 px-6" action method="POST">
+            <form onSubmit={handleSubmit} className="py-4 px-6" method="POST">
                 <div className="mb-4">
                     <label className="block text-gray-700 font-bold mb-2" htmlFor="name">
                         Name
                     </label>
-
-
                     <div className="flex space-x-4">
                         <input
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -246,8 +181,6 @@ const Sign_Up = () => {
                             onBlur={() => validateField('firstName')}
                             value={formData.firstName}
                         />
-
-
                         <input
                             type="text"
                             name="lastName"
@@ -257,12 +190,11 @@ const Sign_Up = () => {
                             onBlur={() => validateField('lastName')}
                             value={formData.lastName}
                         />
-
                     </div>
                     <div className="flex justify-between">
-
                         {validationErrors.firstName && (
-                            <span className="text-red-500 text-xs">{validationErrors.firstName}</span>
+                            <span className="text-red-500 text-xs">{
+                                validationErrors.firstName}</span>
                         )}
                         {validationErrors.lastName && (
                             <span className="text-red-500 text-xs">{validationErrors.lastName}</span>
@@ -286,33 +218,65 @@ const Sign_Up = () => {
                         <span className="text-red-500 text-xs">{validationErrors.username}</span>
                     )}
                 </div>
-
-
                 <div className="mb-4">
                     <label className="block text-gray-700 font-bold mb-2" htmlFor="phone">
                         Password
                     </label>
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        onChange={handleChange}
-                        onBlur={() => validateField('password')}
-                        value={formData.password}
-                    />
+                    <div className="relative">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            name="password"
+                            placeholder="Password"
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            onChange={handleChange}
+                            onBlur={() => validateField('password')}
+                            value={formData.password}
+                        />
+                        <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 px-4 py-2 bg-gray-200 text-gray-700"
+                            onClick={togglePasswordVisibility}
+                        >
+                            {showPassword ? "Hide" : "Show"}
+                        </button>
+                    </div>
                     {validationErrors.password && (
                         <span className="text-red-500 text-xs">{validationErrors.password}</span>
-                    )}                </div>
-
-                <div className='mb-4'>
-
+                    )}
+                </div>
+                <div className="mb-4">
+                    <label className="block text-gray-700 font-bold mb-2" htmlFor="confirmPassword">
+                        Confirm Password
+                    </label>
+                    <div className="relative">
+                        <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            name="confirmPassword"
+                            placeholder="Confirm Password"
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            onChange={handleChange}
+                            onBlur={() => validateField('confirmPassword')}
+                            value={formData.confirmPassword}
+                        />
+                        <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 px-4 py-2 bg-gray-200 text-gray-700"
+                            onClick={toggleConfirmPasswordVisibility}
+                        >
+                            {showConfirmPassword ? "Hide" : "Show"}
+                        </button>
+                    </div>
+                    {validationErrors.confirmPassword && (
+                        <span className="text-red-500 text-xs">{validationErrors.confirmPassword}</span>
+                    )}
+                </div>
+                <div className="mb-4">
                     <label className="block text-gray-700 font-bold mb-2" htmlFor="date">
                         Tech Stacks
                     </label>
                     <Select
                         options={options}
-                        className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         isMulti
                         value={options.filter(option => formData.techStacks.includes(option.value))}
                         onChange={handleTechStack}
@@ -355,16 +319,20 @@ const Sign_Up = () => {
                         <span className="text-red-500 text-xs">{validationErrors.github}</span>
                     )}
                 </div>
-
                 <div className="flex items-center justify-center mb-4">
                     <button
-                        className="bg-gray-900 text-white py-2 px-4 rounded hover:bg-gray-800 focus:outline-none focus:shadow-outline" type="submit">
+                        className="bg-gray-900 text-white py-2 px-4 rounded hover:bg-gray-800 focus:outline-none focus:shadow-outline"
+                        type="submit"
+                    >
                         Sign up
                     </button>
                 </div>
             </form>
         </div>
-    )
-}
+    );
+};
 
 export default Sign_Up
+
+
+

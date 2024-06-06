@@ -17,6 +17,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toggle": "^1.0.3",
     "agora-rtc-sdk-ng": "^4.20.2",
+    "agora-rtm-sdk": "^2.1.9",
     "antd": "^5.17.3",
     "axios": "^1.6.8",
     "class-variance-authority": "^0.7.0",
