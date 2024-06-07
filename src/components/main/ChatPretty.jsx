@@ -9,7 +9,7 @@ export function ChatPretty() {
                 <PrettyChatWindow
                     projectId="791f28ff-082b-47d7-96c0-6a79afd19040"
                     username="Dagim"
-                    secret="123456789"
+                    secret="Dagi1234789"
                 />
             </div>
         </div>

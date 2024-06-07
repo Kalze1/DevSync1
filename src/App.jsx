@@ -44,23 +44,47 @@ function App() {
 
   const [recentMessage, setRecentMessage] = useState("recent message")
   const [messageTime, setMessageTime] = useState(null)
-  const [user, setUser] = useState(undefined);
+  const [user, setUser] = useState();
 
   const [chats, setChats] = useState([]);
 
 
   const projectId = import.meta.env.VITE_PROJECT_ID;
-  const username = "DagiB";
-  const secret = "Dagi1234";
-
-
-  const chatProps = useMultiChatLogic(projectId, username, secret);
 
 
 
-  return (<>
 
-    <Router>
+  const chatProps = useMultiChatLogic(projectId, user?.username, user?.password);
+  const handleLoginSuccess = (userData) => {
+    // setUser(userData);
+    console.log("userData")
+    useState(userData)
+    console.log(userData)
+    setCredentials({ username: userData.username, password: userData.password }); // Update credentials after login
+  };
+
+  useEffect(() => {
+    console.log('user', user);
+
+    console.log(chatProps)
+  }, [user])
+
+
+
+  if (!user) {
+
+    return <Router>
+      <Routes>
+        <Route path="/" element={<Login onAuth={(user) => setUser(user)} />} />
+        <Route path="/signup" element={<Sign_Up />} />
+
+      </Routes>
+    </Router>
+
+  }
+
+  else {
+    return <Router>
 
       <MultiChatSocket {...chatProps} />
 
@@ -68,20 +92,17 @@ function App() {
 
         <Sidebar style={{ minWidth: '200px' }} />
         <Routes>
-          <Route path="/auth" element={<Login />} />
-          <Route path="/chats" element={
-            <MultiChatWindow  {...chatProps}
-              style={{ height: '100vh', flexGrow: 1 }}
-              renderChatHeader={() => <GroupChatTop chat={chatProps.chat} />}
 
 
+          <Route path="/signup" element={<Sign_Up />} />
 
-            />
 
-            // <FullChatEngine />
-          } />
+          <Route path="/chats" element={<MultiChatWindow {...chatProps} style={{ height: '100vh', flexGrow: 1 }} renderChatHeader={() => <GroupChatTop chat={chatProps.chat} />} />}
+          />
+
+
           <Route path="/groups" element={
-            <MultiChatWindow
+            user && <MultiChatWindow
               chats={chatProps.chats}
               messages={chatProps.messages}
               activeChatId={chatProps.activeChatId}
@@ -101,6 +122,7 @@ function App() {
               onRemovePersonClick={chatProps.onRemovePersonClick}
               onDeleteChatClick={chatProps.onDeleteChatClick}
               style={{ height: '100vh', flexGrow: 1 }}
+              renderChatHeader={() => <Chattop chat={chatProps.chat} />}
               renderChatList={() => <DirectChat />}
 
 
@@ -121,16 +143,19 @@ function App() {
 
     </Router>
 
-    <Sign_Up />
-
-    {/* <AudioChat /> */}
-
-    <AudioCall />
-    {/* <Login /> */}
+  }
 
 
 
-  </>)
+
+  // {/* <AudioChat /> */}
+
+  // <AudioCall />
+  // {/* <Login /> */}
+
+
+
+
 
 }
 
