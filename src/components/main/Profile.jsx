@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Avatar from './avatar'
 import axios from 'axios';
 
-const Profile = ({ selectedUser }) => {
+const Profile = ({ selectedUser, currentUser }) => {
 
 
     // const [isOpen, setIsOpen] = useState(true);
@@ -94,8 +94,8 @@ const Profile = ({ selectedUser }) => {
         const url = 'https://api.chatengine.io/chats/';
         const headers = {
             'Project-ID': import.meta.env.VITE_PROJECT_ID, // Replace with your Project ID
-            'User-Name': 'DagiB', // Replace with your User Name
-            'User-Secret': 'Dagi1234', // Replace with your User Secret
+            'User-Name': currentUser.username, // Replace with your User Name
+            'User-Secret': currentUser.password, // Replace with your User Secret
 
         };
 
@@ -123,6 +123,7 @@ const Profile = ({ selectedUser }) => {
 
         console.log(selectedUser);
         setNewUser(selectedUser)
+        console.log(currentUser);
         console.log('new user: ', newUser);
     }, [selectedUser]);
 
@@ -185,7 +186,7 @@ const Profile = ({ selectedUser }) => {
                     </div>
 
                     <div onClick={createChat} className='hover:bg-gray-200'>
-                        <a>SEND MESSAGE</a>
+                        <a>Send Message</a>
                         {/* <a href="#chat-section" class="bg-blue-500 text-white py-2 px-4 rounded-md shadow-sm hover:bg-blue-700">Open Chat</a> */}
                     </div>
 

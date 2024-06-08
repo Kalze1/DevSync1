@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import * as Yup from 'yup';
 import axios from 'axios';
 import Select from 'react-select';
+import { Link } from 'react-router-dom'
+
 const Sign_Up = () => {
     const [formData, setFormData] = useState({
         firstName: '',
@@ -114,16 +116,19 @@ const Sign_Up = () => {
             );
 
             console.log('User created:', userResponse.data);
-
+            alert('user registration successful')
             // ChatEngine API call to fetch chats
             const response = await axios.get(
                 'https://api.chatengine.io/chats/',
                 {
                     headers: {
-                        'Private-Key': import.meta.env.VITE_PROJECT_KEY, // Replace with your actual key
+                        'Project-ID': import.meta.env.VITE_PROJECT_ID,
+                        'User-Name': 'DagiB',
+                        'User-Secret': 'Dagi1234'
                     },
                 }
-            );
+            )
+
 
             console.log('Chats fetched successfully:', response.data);
 
@@ -319,6 +324,7 @@ const Sign_Up = () => {
                         <span className="text-red-500 text-xs">{validationErrors.github}</span>
                     )}
                 </div>
+
                 <div className="flex items-center justify-center mb-4">
                     <button
                         className="bg-gray-900 text-white py-2 px-4 rounded hover:bg-gray-800 focus:outline-none focus:shadow-outline"
@@ -326,7 +332,14 @@ const Sign_Up = () => {
                     >
                         Sign up
                     </button>
+
                 </div>
+                <Link to='/'>
+                    <div className="flex gap-2">
+                        <p className="text-gray-600 text-sm">Already have an account?</p><a className="text-gray-600 text-sm underline" href="/register">Login here</a>
+                    </div>
+
+                </Link>
             </form>
         </div>
     );

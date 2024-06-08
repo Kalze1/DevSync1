@@ -1,24 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { ChatList, getChat } from 'react-chat-engine-advanced';
+import React from 'react';
+import { ChatList } from 'react-chat-engine-advanced';
 
-const DirectChatList = ({ projectID, userName, userSecret }) => {
-    const [chats, setChats] = useState([]);
-
-    useEffect(() => {
-        getChat(
-            { projectID, userName, userSecret },
-            (chatList) => {
-                const directChats = chatList.filter(chat => chat.is_direct_chat);
-                setChats(directChats);
-            },
-            (error) => {
-                console.error('Error fetching chats:', error);
-            }
-        );
-    }, [projectID, userName, userSecret]);
-
+const DirectChatList = ({ chats, onChatClick }) => {
     return (
-        <ChatList chats={chats} />
+        <ChatList
+            chats={chats}
+            renderChat={(chat) => (
+                <div onClick={() => onChatClick(chat)} key={chat.id}>
+                    {chat.title}
+                </div>
+            )}
+        />
     );
 };
 

@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, } from 'react';
+import { useNavigate } from 'react-router-dom'
 
-const UserProfile = () => {
+
+
+const UserProfile = ({ setUser }) => {
     const [profile, setProfile] = useState({
         firstName: 'John',
         lastName: 'Doe',
@@ -11,17 +14,30 @@ const UserProfile = () => {
         expertise: 'Web Development',
         rating: 8,
         bio: 'Full-stack developer with 5 years of experience in web development.',
-        lastSeen: '2 hours ago',
         skills: [
             { language: 'JavaScript', level: 9 },
             { language: 'React', level: 8 },
             { language: 'Node.js', level: 7 },
         ],
+        profilePicture: null, // Add this line
     });
+
+    // const navigate = useNavigate()
 
     const [editField, setEditField] = useState('');
     const [fieldValue, setFieldValue] = useState('');
+    const [profilePicture, setProfilePicture] = useState(null);
 
+    const navigate = useNavigate();
+
+
+    const handleLogout = () => {
+
+        setUser({})
+        console.log('logout');
+        navigate('/')
+
+    }
     const handleEdit = (field) => {
         setEditField(field);
         setFieldValue(profile[field]);
@@ -36,6 +52,12 @@ const UserProfile = () => {
         setEditField('');
     };
 
+    const handlePictureChange = (e) => {
+        const file = e.target.files[0];
+        setProfilePicture(URL.createObjectURL(file));
+        setProfile({ ...profile, profilePicture: file });
+    };
+
     const addTechStack = () => {
         alert('Add new tech stack');
     };
@@ -44,8 +66,15 @@ const UserProfile = () => {
         <div className="grid gap-4 h-screen">
             <div className="card card-side bg-base-100 flex flex-row">
                 <div className="avatar pt-3 top-1 pl-5">
-                    {/* Replace <Avatar /> with an actual avatar image or component */}
-                    <div className="rounded-full w-24 h-24 bg-gray-300"></div>
+                    {profile.profilePicture ? (
+                        <img
+                            src={profilePicture}
+                            alt="Profile"
+                            className="rounded-full w-24 h-24 object-contain"
+                        />
+                    ) : (
+                        <div className="rounded-full w-24 h-24 bg-gray-300"></div>
+                    )}
                 </div>
                 <div className="card-body flex flex-row pb-5">
                     <div className='pr-5'>
@@ -67,6 +96,15 @@ const UserProfile = () => {
                     </svg>
                 </div>
                 <div className="card-body">
+                    <div className="mb-4">
+                        <h2 className='text-lg font-bold'>Profile Picture</h2>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handlePictureChange}
+                            className="input input-bordered w-full max-w-xs"
+                        />
+                    </div>
                     {['firstName', 'lastName', 'email', 'username', 'password', 'github', 'bio'].map((field) => (
                         <div key={field} className='mb-4'>
                             <h2 className='text-lg font-bold'>{field.charAt(0).toUpperCase() + field.slice(1)}</h2>
@@ -89,6 +127,8 @@ const UserProfile = () => {
                         </div>
                     ))}
 
+
+
                     <div className="mb-4">
                         <h2 className='text-lg font-bold'>Field of Expertise</h2>
                         {profile.skills.map((skill, index) => (
@@ -106,6 +146,9 @@ const UserProfile = () => {
                     </div>
 
 
+                    <div>
+                        <button onClick={handleLogout} className="btn btn-primary">Logout</button>
+                    </div>
                 </div>
             </div>
         </div>

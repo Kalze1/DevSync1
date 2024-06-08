@@ -18,7 +18,7 @@ import ChatE from "./components/main/ChatE"
 import { ChatEngine, ChatEngineWrapper, Socket, ChatFeed, ChatSettings, ChatList } from "react-chat-engine"
 import { PrettyChatWindow } from "react-chat-engine-pretty"
 import AuthPage from "./components/main/AuthPage";
-import { useMultiChatLogic, MultiChatSocket, MultiChatWindow, getOrCreateChat, } from "react-chat-engine-advanced"
+import { useMultiChatLogic, MultiChatSocket, MultiChatWindow, } from "react-chat-engine-advanced"
 
 import Sign_Up from "./components/main/Sign_Up"
 import Login from "./components/main/Login"
@@ -37,7 +37,7 @@ import Chattop from "./components/navs/chattop"
 import DirectChat from "./components/main/DirectChat"
 import AudioCall from "./components/ChatsPage/AudioCall"
 import GroupChatTop from './components/navs/GroupChatTop'
-
+import axios from 'axios'
 import CurrentUser from './components/main/CurrentUser'
 
 function App() {
@@ -47,6 +47,39 @@ function App() {
   const [user, setUser] = useState();
 
   const [chats, setChats] = useState([]);
+
+  const [fetchedChats, setFetchedChats] = useState([]);
+  const [Dms, setDms] = useState([]);
+  const [selectedChat, setSelectedChat] = useState(null);
+
+  useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        const response = await axios.get(
+          'https://api.chatengine.io/chats/',
+          {
+            headers: {
+              'Project-ID': import.meta.env.VITE_PROJECT_ID,
+              'User-Name': 'abela',
+              'User-Secret': '@Abel1234'
+            },
+          }
+        );
+
+        console.log('Chats fetched successfully(for DM):', response.data);
+        setFetchedChats(response.data);
+
+        const directMessages = response.data.filter(chat => chat.is_direct_chat);
+        console.log(directMessages);
+        setDms(directMessages);
+      } catch (error) {
+        console.error('Error fetching chats:', error);
+      }
+    };
+
+    fetchChats();
+  }, []);
+
 
 
   const projectId = import.meta.env.VITE_PROJECT_ID;
@@ -90,14 +123,26 @@ function App() {
 
       <div className="flex" style={{ height: '100vh', fontFamily: "sans-serif" }}>
 
-        <Sidebar style={{ minWidth: '200px' }} />
+        <Sidebar style={{ minWidth: '200px' }} setUser={setUser} />
+        {/* <Chat /> */}
         <Routes>
 
 
           <Route path="/signup" element={<Sign_Up />} />
 
 
-          <Route path="/chats" element={<MultiChatWindow {...chatProps} style={{ height: '100vh', flexGrow: 1 }} renderChatHeader={() => <GroupChatTop chat={chatProps.chat} />} />}
+          <Route path="/chats" element={<MultiChatWindow {...chatProps}
+            style={{ height: '100vh', flexGrow: 1 }}
+            renderChatHeader={() => {
+              if (chatProps.chat && chatProps.chat.people) {
+                if (chatProps.chat.people.length === 2) {
+                  return <Chattop chat={chatProps.chat} username={chatProps.username} />;
+                } else {
+                  return <GroupChatTop currentUser={user} chat={chatProps.chat} />;
+                }
+              }
+              return null; // Or render a default/empty header
+            }} />}
           />
 
 
@@ -122,8 +167,15 @@ function App() {
               onRemovePersonClick={chatProps.onRemovePersonClick}
               onDeleteChatClick={chatProps.onDeleteChatClick}
               style={{ height: '100vh', flexGrow: 1 }}
-              renderChatHeader={() => <Chattop chat={chatProps.chat} />}
-              renderChatList={() => <DirectChat />}
+              renderChatHeader={() => <Chattop chat={chatProps.chat} username={chatProps.username} />}
+              renderChatList={(chatListProps) => (
+                <DirectChatList
+                  currentUser={user}
+                  chats={Dms}
+                  onChatClick={(chat) => setSelectedChat(chat)}
+
+                />
+              )}
 
 
 
@@ -135,6 +187,7 @@ function App() {
 
           <Route path="/Knowledge-base" element={<KnowledgeBase />} />
           <Route path="/my-profile" element={<CurrentUser />} />
+          {/* <Route path="/old-chat" element={<Chat />} /> */}
 
         </Routes>
 

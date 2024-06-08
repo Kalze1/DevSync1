@@ -19,7 +19,6 @@ const CustomChatList = (props) => {
                     'https://api.chatengine.io/chats/',
                     {
                         headers: {
-
                             'Project-ID': import.meta.env.VITE_PROJECT_ID,
                             'User-Name': 'DagiB',
                             'User-Secret': 'Dagi1234'
@@ -28,26 +27,24 @@ const CustomChatList = (props) => {
                 );
 
                 console.log('Chats fetched successfully(for DM):', response.data);
-                console.log("dms: ", Dms);
-                setFetchedChats(response.data)
-                // console.log('fetched Chats ', fetchedChats);
-                const directMessages = fetchedChats.filter(chat => chat.is_direct_chat)
-                setDms(fetchedChats.filter(chat => chat.is_direct_chat))
-                console.log('dms: ', Dms);
+                setFetchedChats(response.data);
+
+                const directMessages = response.data.filter(chat => chat.is_direct_chat);
+                console.log(directMessages);
+                setDms(directMessages);
+                console.log(directMessages);
             } catch (error) {
                 console.error('Error fetching chats:', error);
             }
         };
 
-        fetchChats()
-        console.log();
-
-    }, [])
+        fetchChats();
+    }, []);
     return (
         <div>
             {Dms.map((chat, index) => (
 
-                <div>{chat}</div>
+                <div>{chat.title}</div>
 
             ))}
         </div>

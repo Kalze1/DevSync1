@@ -42,19 +42,26 @@ const Login = (props) => {
         e.preventDefault();
         const filteredData = formData;
 
-        console.log(filteredData)
+        console.log(filteredData);
         axios
             .post("http://localhost:3001/api/login", filteredData)
-            .then((r) => props.onAuth(filteredData)) // NOTE: over-ride secret
-            .then(navigate('/chats'))
-            .catch((e) => console.log(JSON.stringify(e.response.data)));
+            .then((response) => {
+                // Handle successful login
+                props.onAuth(filteredData); // NOTE: over-ride secret
+                navigate('/chats');
+            })
+            .catch((error) => {
+                // Handle failed login
+                alert('Invalid Credentials');
+            });
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
         try {
-            // console.log("amshdgvjhb")
+
+
             await validationSchema.validate(formData, { abortEarly: false }); // Validate all fields at once
             const filteredData = formData;
             console.log(filteredData)

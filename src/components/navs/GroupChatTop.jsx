@@ -5,7 +5,7 @@ import Profile from '../main/Profile'
 import axios from 'axios'
 import { getChat } from 'react-chat-engine'
 
-const GroupChatTop = ({ chat }) => {
+const GroupChatTop = ({ chat, currentUser }) => {
 
     if (!chat || !chat.title) {
         return null;
@@ -87,11 +87,6 @@ const GroupChatTop = ({ chat }) => {
 
 
 
-
-
-
-
-
     }
 
     useEffect(() => {
@@ -144,9 +139,7 @@ const GroupChatTop = ({ chat }) => {
                             <div className="hidden md:block" onClick={showModal}>
                                 <dialog id="group_members" className="modal">
                                     <div className="modal-box">
-                                        <button className="absolute right-12 top-3.5">
-                                            <svg width="24px" height="24px" viewBox="0 0 24 24" strokeWidth="1.5" fill="none" xmlns="http://www.w3.org/2000/svg" color="#000000"><path d="M17 17L21 21" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M3 11C3 15.4183 6.58172 19 11 19C13.213 19 15.2161 18.1015 16.6644 16.6493C18.1077 15.2022 19 13.2053 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11Z" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                        </button>
+
                                         <form className='flex' method="dialog">
                                             {/* if there is a button in form, it will close the modal */}
 
@@ -198,7 +191,7 @@ const GroupChatTop = ({ chat }) => {
                                                             {/* if there is a button in form, it will close the modal */}
                                                             {/* <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button> */}
                                                         </form>
-                                                        <Profile selectedUser={user} />
+                                                        <Profile currentUser={currentUser} selectedUser={user} />
                                                     </div>
                                                 </dialog>
                                                 {/* foot */}
@@ -236,9 +229,7 @@ const GroupChatTop = ({ chat }) => {
                                 <div className="relative ml-3">
                                     <div className="relative inline-block text-left">
                                         <div>
-                                            <button type="button" className="  flex items-center justify-center w-full rounded-md  px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-50 hover:bg-gray-50 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-gray-500" id="options-menu">
-                                                <svg width="24px" height="24px" viewBox="0 0 24 24" strokeWidth="1.5" fill="none" xmlns="http://www.w3.org/2000/svg" color="#000000"><path d="M17 17L21 21" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M3 11C3 15.4183 6.58172 19 11 19C13.213 19 15.2161 18.1015 16.6644 16.6493C18.1077 15.2022 19 13.2053 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11Z" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                            </button>
+
                                         </div>
 
                                     </div>

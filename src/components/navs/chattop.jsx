@@ -7,15 +7,7 @@ import { io } from 'socket.io-client';
 
 const socket = io('http://localhost:5000');
 
-const chattop = ({ chat }) => {
-
-    if (!chat || !chat.title) {
-        return null;
-    }
-
-    // Extract chat title
-    const title = chat.title;
-
+const chattop = ({ chat, username }) => {
 
 
     const [isConnected, setIsConnected] = useState(false)
@@ -39,7 +31,7 @@ const chattop = ({ chat }) => {
 
     const appid = '5511b0a0a7364bcf91a13238d4590167';
     const token = null;
-    const rtcUid = Math.floor(Math.random() * 2032);
+    const rtcUid = username;
 
     const rtcClient = useRef(null);
 
@@ -103,6 +95,8 @@ const chattop = ({ chat }) => {
         setUserWrappers((prevWrappers) => [...prevWrappers, newUserWrapper]);
     };
 
+
+
     const handleUserPublished = async (user, mediaType) => {
         await rtcClient.current.subscribe(user, mediaType);
         if (mediaType === 'audio') {
@@ -147,37 +141,20 @@ const chattop = ({ chat }) => {
         initRtc();
     };
 
-
-    const handleClick = () => {
-        setIsConnected(true)
-        if (!intervalIdRef.current) {
-            // Start the timer
-            intervalIdRef.current = setInterval(() => {
-                setSeconds((prevSeconds) => {
-                    if (prevSeconds === 59) {
-                        setMinutes((prevMinutes) => {
-                            if (prevMinutes === 59) {
-                                setHours((prevHours) => prevHours + 1);
-                                return 0;
-                            }
-                            return prevMinutes + 1;
-                        });
-                        return 0;
-                    }
-                    return prevSeconds + 1;
-                });
-            }, 1000);
-        }
+    const getOtherUser = (chat, username) => {
+        const otherMember = chat.people.find(
+            (member) => member.person.username !== username
+        );
+        return otherMember ? otherMember.person : null;
     };
+    const otherUser = getOtherUser(chat, username);
 
-    const handleStop = () => {
-        setSeconds(0);
-        setMinutes(0);
-        setHours(0);
-        clearInterval(intervalIdRef.current);
-        intervalIdRef.current = null;
-        setIsConnected(false)
-    };
+    if (!otherUser) {
+        return null;
+    }
+
+
+
     return (
         <div>
             <nav className="bg-white dark:bg-gray-800  shadow ">
@@ -199,15 +176,15 @@ const chattop = ({ chat }) => {
                                             <div className="flex items-center flex-1 p-4 cursor-pointer select-none">
                                                 <div className="flex flex-col items-center justify-center w-10 h-10 mr-4">
                                                     <a className="relative block">
-                                                        <Avatar />
+                                                        {/* {otherUser.avatar} */}
                                                     </a>
                                                 </div>
                                                 <div className="flex-1 pl-1 mr-16">
-                                                    <div className="font-medium dark:text-white">
-                                                        {title}
+                                                    <div className="font-medium text-gray-900">
+                                                        {otherUser.username}
                                                     </div>
                                                     <div className="text-sm text-gray-600 dark:text-gray-200">
-                                                        online
+                                                        {otherUser.isActive}
                                                     </div>
                                                 </div>
 
@@ -231,6 +208,30 @@ const chattop = ({ chat }) => {
                         </div>
                         <div className="block">
                             <div className="flex items-center ml-4 md:ml-6">
+
+                                {/* Open the modal using document.getElementById('ID').showModal() method */}
+                                <button className="p-6" onClick={() => document.getElementById('my_modal_1').showModal()}>
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                    </svg>
+
+                                </button>
+                                <dialog id="my_modal_1" className="modal">
+                                    <div className="modal-box">
+                                        <h3 className="font-bold text-lg">Save chat to knowledge base</h3>
+                                        <input type="text" placeholder="insert title" className="input m-4 input-bordered w-full max-w-xs" />
+                                        <textarea placeholder="insert Description for the issue" className="textarea m-4 textarea-bordered textarea-lg w-full max-w-xs" ></textarea>
+                                        <div className="modal-action">
+                                            <form method="dialog">
+                                                {/* if there is a button in form, it will close the modal */}
+                                                <button className="btn">Close</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </dialog>
+
+
 
 
                                 {/* You can open the modal using document.getElementById('ID').showModal() method */}
@@ -281,42 +282,41 @@ const chattop = ({ chat }) => {
 
 
                                         </div>
-                                    </div>
-                                </dialog>
+                                        {incomingCall && (
 
-                                {incomingCall && (
 
-                                    <div className="modal-box w-1/3 max-w-5xl">
-                                        <div className="flex justify-center">
-                                            <div className="avatar">
-                                                <div className="w-24 rounded-full ring ring-success ring-offset-base-100 ring-offset-2">
-                                                    <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                                            <div className="modal-box w-1/3 max-w-5xl">
+                                                <div className="flex justify-center">
+                                                    <div className="avatar">
+                                                        <div className="w-24 rounded-full ring ring-success ring-offset-base-100 ring-offset-2">
+                                                            <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                                                        </div>
+                                                    </div>
+
+
+
+                                                </div>
+                                                <br />
+
+                                                <p className="font-bold text-lg text-center">Incoming call from {callerUid}</p>
+                                                <div className="modal-action flex justify-center">
+                                                    <form method="dialog">
+                                                        {/* if there is a button, it will close the modal */}
+                                                        <button className="btn btn-outline btn-success align-middle" onClick={acceptCall}>
+                                                            Accept
+
+                                                        </button>
+                                                    </form>
+
+                                                    <button className="btn btn-outline btn-error align-middle" onClick={leaveCall} >End call</button>
                                                 </div>
                                             </div>
 
-
-
-                                        </div>
-                                        <br />
-
-                                        <p className="font-bold text-lg text-center">Incoming call from {callerUid}</p>
-                                        <div className="modal-action flex justify-center">
-                                            <form method="dialog">
-                                                {/* if there is a button, it will close the modal */}
-                                                <button className="btn btn-outline btn-success align-middle" onClick={acceptCall}>
-                                                    Accept
-
-                                                </button>
-                                            </form>
-
-                                            <button className="btn btn-outline btn-error align-middle" onClick={leaveCall} >End call</button>
-                                        </div>
+                                        )}
                                     </div>
+                                </dialog>
 
 
-
-
-                                )}
 
 
 

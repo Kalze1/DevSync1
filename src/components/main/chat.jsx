@@ -12,7 +12,7 @@ import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 // new Picker({ data })
 import axios from 'axios'
-import { RecentMessageContext } from '@/contexts/RecentMessageContext'
+
 
 
 
@@ -26,7 +26,7 @@ const chat = () => {
 
 
 
-    const { setRecentMessage, messageTime, setMessageTime } = useContext(RecentMessageContext);
+
 
     const [message, setMessage] = useState(null);
     // const [bubbleMessage, setBubbleMessage] = useState(false);
@@ -76,7 +76,7 @@ const chat = () => {
         if (message.trim() !== '') {  // Only add non-empty messages
             setMessages([...messages, message]);
             setMessage('');  // Clear the input field after sending
-            setRecentMessage(message)
+
             // setIsCode(false)
 
             const now = new Date();
@@ -90,7 +90,7 @@ const chat = () => {
             const time = `${hour12.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} ${meridiem}`
 
 
-            setMessageTime(time)
+
             console.log(messageTime);
             console.log(message);
         }

@@ -3,7 +3,7 @@ import Avatar from './avatar'
 import CurrentUser from './CurrentUser'
 
 import { Link } from 'react-router-dom'
-const sidebar = () => {
+const sidebar = ({ setUser }) => {
     return (
 
         <div className="flex flex-row h-full">
@@ -109,7 +109,7 @@ const sidebar = () => {
 
                     </li>
 
-                    <li>
+                    {/* <li>
                         <Link to="/profile">
                             <a title="Admin" href="#admin" className="h-16 px-6 flex items-center hover:text-white w-full">
                                 <i className="mx-auto">
@@ -120,9 +120,17 @@ const sidebar = () => {
                             </a>
                         </Link>
 
-                    </li>
+                    </li> */}
                 </ul>
+
+                <div>
+
+                </div>
+
                 <div className="mt-auto h-16 flex items-center w-full text-gray-700">
+
+
+
 
                     <div className="h-16 w-10 mx-auto" onClick={() => document.getElementById('my_profile').showModal()}>
 
@@ -132,9 +140,11 @@ const sidebar = () => {
                                     {/* if there is a button in form, it will close the modal */}
                                     <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                                 </form>
-                                <CurrentUser />
+                                <CurrentUser setUser={setUser} />
                             </div>
                         </dialog>
+
+
 
 
                         <Avatar />
