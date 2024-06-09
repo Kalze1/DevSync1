@@ -128,13 +128,13 @@ const AudioCall = () => {
 
     return (
         <>
-            {/* <button onClick={initRtc} disabled={isJoined || incomingCall}>
+            <button onClick={initRtc} disabled={isJoined || incomingCall}>
                 call
             </button>
             <br />
             <button onClick={leaveCall} disabled={!isJoined}>
                 End call
-            </button> */}
+            </button>
 
 
 

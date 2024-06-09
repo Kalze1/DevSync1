@@ -91,8 +91,7 @@ const chat = () => {
 
 
 
-            console.log(messageTime);
-            console.log(message);
+
         }
 
     }

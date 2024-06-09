@@ -110,6 +110,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login onAuth={(user) => setUser(user)} />} />
         <Route path="/signup" element={<Sign_Up />} />
+        <Route path="/old" element={<Chat />} />
 
       </Routes>
     </Router>
@@ -124,11 +125,15 @@ function App() {
       <div className="flex" style={{ height: '100vh', fontFamily: "sans-serif" }}>
 
         <Sidebar style={{ minWidth: '200px' }} setUser={setUser} />
+
         {/* <Chat /> */}
         <Routes>
 
 
           <Route path="/signup" element={<Sign_Up />} />
+          <Route path="/audio" element={<AudioCall />} />
+
+
 
 
           <Route path="/chats" element={<MultiChatWindow {...chatProps}
@@ -136,7 +141,7 @@ function App() {
             renderChatHeader={() => {
               if (chatProps.chat && chatProps.chat.people) {
                 if (chatProps.chat.people.length === 2) {
-                  return <Chattop chat={chatProps.chat} username={chatProps.username} />;
+                  return <Chattop chat={chatProps.chat} username={chatProps.username} isActive={chatProps.activeChatId} />;
                 } else {
                   return <GroupChatTop currentUser={user} chat={chatProps.chat} />;
                 }
@@ -167,7 +172,7 @@ function App() {
               onRemovePersonClick={chatProps.onRemovePersonClick}
               onDeleteChatClick={chatProps.onDeleteChatClick}
               style={{ height: '100vh', flexGrow: 1 }}
-              renderChatHeader={() => <Chattop chat={chatProps.chat} username={chatProps.username} />}
+              renderChatHeader={() => <Chattop chat={chatProps.chat} activeChatId={chatProps.activeChatId} user={user} username={chatProps.username} />}
               renderChatList={(chatListProps) => (
                 <DirectChatList
                   currentUser={user}
@@ -192,6 +197,7 @@ function App() {
         </Routes>
 
 
+
       </div>
 
     </Router>
@@ -203,7 +209,6 @@ function App() {
 
   // {/* <AudioChat /> */}
 
-  // <AudioCall />
   // {/* <Login /> */}
 
 
