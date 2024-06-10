@@ -39,6 +39,10 @@ import AudioCall from "./components/ChatsPage/AudioCall"
 import GroupChatTop from './components/navs/GroupChatTop'
 import axios from 'axios'
 import CurrentUser from './components/main/CurrentUser'
+import SkillEvaluation from "./components/main/SkillEvaluation"
+import CustomChatList from "./components/main/DirectChat"
+
+import CustomChatFeed from "./components/ChatsPage/customChatFeed"
 
 function App() {
 
@@ -97,10 +101,9 @@ function App() {
   };
 
   useEffect(() => {
-    console.log('user', user);
+    setUser(JSON.parse(sessionStorage.getItem('userAuthToken')))
 
-    console.log(chatProps)
-  }, [user])
+  }, [])
 
 
 
@@ -108,11 +111,16 @@ function App() {
 
     return <Router>
       <Routes>
-        <Route path="/" element={<Login onAuth={(user) => setUser(user)} />} />
+        <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Sign_Up />} />
         <Route path="/old" element={<Chat />} />
+        <Route path="/quiz" element={<SkillEvaluation />} />
+
+
+
 
       </Routes>
+      {/* <Chat /> */}
     </Router>
 
   }
@@ -138,16 +146,21 @@ function App() {
 
           <Route path="/chats" element={<MultiChatWindow {...chatProps}
             style={{ height: '100vh', flexGrow: 1 }}
+            // renderChatFeed={(chatAppState) => <CustomChatFeed {...chatProps} />}
+
+
+
             renderChatHeader={() => {
               if (chatProps.chat && chatProps.chat.people) {
                 if (chatProps.chat.people.length === 2) {
-                  return <Chattop chat={chatProps.chat} username={chatProps.username} isActive={chatProps.activeChatId} />;
+                  return <Chattop chat={chatProps.chat} username={chatProps.username} user={user} isActive={chatProps.activeChatId} />;
                 } else {
                   return <GroupChatTop currentUser={user} chat={chatProps.chat} />;
                 }
               }
               return null; // Or render a default/empty header
-            }} />}
+            }}
+          />}
           />
 
 
@@ -180,12 +193,31 @@ function App() {
                   onChatClick={(chat) => setSelectedChat(chat)}
 
                 />
+
               )}
-
-
-
             />
 
+
+          } />
+
+          <Route path="/chatengine" element={
+            <ChatEngine
+              projectID={projectId}
+              userName={user.username}
+              userSecret={user.password}
+              height="100vh"
+              style={{ height: '100vh', flexGrow: 1 }}
+              renderChatHeader={() => {
+                if (chatProps.chat && chatProps.chat.people) {
+                  if (chatProps.chat.people.length === 2) {
+                    return <Chattop chat={chatProps.chat} username={chatProps.username} user={user} isActive={chatProps.activeChatId} />;
+                  } else {
+                    return <GroupChatTop currentUser={user} chat={chatProps.chat} />;
+                  }
+                }
+                return null; // Or render a default/empty header
+              }}
+            />
           } />
 
 

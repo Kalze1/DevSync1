@@ -20,19 +20,25 @@ const CustomChatList = (props) => {
                     {
                         headers: {
                             'Project-ID': import.meta.env.VITE_PROJECT_ID,
-                            'User-Name': 'DagiB',
-                            'User-Secret': 'Dagi1234'
+                            'User-Name': 'ayu',
+                            'User-Secret': '123456'
                         },
                     }
                 );
 
-                console.log('Chats fetched successfully(for DM):', response.data);
+                console.log('Chats fetched successfully (for DM):', response.data);
                 setFetchedChats(response.data);
 
-                const directMessages = response.data.filter(chat => chat.is_direct_chat);
-                console.log(directMessages);
+                // Log the entire response data to inspect its structure
+                console.log('Complete chats data:', response.data);
+
+                const directMessages = response.data.filter(chat => {
+                    console.log('Inspecting chat:', chat);
+                    return chat.is_direct_chat;
+                });
+
+                console.log("Filtered DMs: ", directMessages);
                 setDms(directMessages);
-                console.log(directMessages);
             } catch (error) {
                 console.error('Error fetching chats:', error);
             }
@@ -40,6 +46,7 @@ const CustomChatList = (props) => {
 
         fetchChats();
     }, []);
+
     return (
         <div>
             {Dms.map((chat, index) => (

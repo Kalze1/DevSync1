@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-const Login = (props) => {
+const Login = () => {
     const [formData, setFormData] = useState({
         username: '',
         password: '',
@@ -42,20 +42,19 @@ const Login = (props) => {
         e.preventDefault();
         const filteredData = formData;
 
-        console.log(filteredData);
+        console.log("the user is : ", filteredData);
         axios
             .post("http://localhost:3001/api/login", filteredData)
             .then((response) => {
-                // Handle successful login
-                props.onAuth(filteredData); // NOTE: over-ride secret
-                navigate('/chats');
+                sessionStorage.setItem('userAuthToken', JSON.stringify(filteredData));
+                window.location.href = "/chats";
+
             })
             .catch((error) => {
                 // Handle failed login
                 alert('Invalid Credentials');
             });
     };
-
     const handleSubmit = async (event) => {
         event.preventDefault();
 

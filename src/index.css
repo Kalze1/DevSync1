@@ -136,3 +136,52 @@ body {
 #ce-settings-people-dropdown {
   display: none !important
 }
+
+
+.tags-input-container {
+  display: flex;
+  flex-wrap: wrap;
+  border: 1px solid #ccc;
+  padding: 5px;
+  border-radius: 5px;
+  align-items: center;
+}
+
+.tags-input-container input {
+  border: none;
+  outline: none;
+  padding: 5px;
+  margin: 5px 0;
+  flex-grow: 1;
+  /* This ensures the input field takes up available space */
+  min-width: 150px;
+  /* Minimum width to ensure input is always visible */
+}
+
+.tag {
+  display: flex;
+  align-items: center;
+  background-color: #e2e2e2;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin: 5px;
+}
+
+.tag button {
+  background: none;
+  border: none;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.tags-input-container .tags-input::placeholder {
+  color: #aaa;
+}
+
+.ce-chat-form-button {
+  display: hidden !important;
+}
+
+.ce-default-button {
+  display: hidden !important;
+}

@@ -5,12 +5,15 @@ import AudioCall from '../ChatsPage/AudioCall';
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import { io } from 'socket.io-client';
 import axios from 'axios';
+import TagsInput from '../ChatsPage/TagsInput'
+import Rating from '../main/Rating';
+
 const socket = io('http://localhost:5000');
 
 
 
 
-const Chattop = ({ chat, username, activeChatId, user }) => {
+const Chattop = ({ chat, username, isActive, user }) => {
     const [isConnected, setIsConnected] = useState(false);
     const [seconds, setSeconds] = useState(0);
     const [minutes, setMinutes] = useState(0);
@@ -28,14 +31,57 @@ const Chattop = ({ chat, username, activeChatId, user }) => {
     const [callerUid, setCallerUid] = useState(null);
     const [isCaller, setIsCaller] = useState(false);
     const [callAccepted, setCallAccepted] = useState(false);
+    const [activeMessages, setActiveMessages] = useState([])
 
     const appid = "5511b0a0a7364bcf91a13238d4590167";
     const token = null;
     const rtcUid = Math.floor(Math.random() * 2032);
     const rtcClient = useRef(null);
+    const [tags, setTags] = useState([]);
+    const [chatCount, setChatCount] = useState(0)
 
-    const fetchMessages = async (chat_id, userSecret, username, projectID) => {
+    const [formData, setFormData] = useState({})
+    const [showRateModal, setShowRateModal] = useState(false);
+
+    // const handleSubmit = (e) => {
+    //     e.preventDefault();
+    //     setFormData(
+    //         {
+    //             title,
+    //             description,
+    //             tags,
+    //             askedDate: Date.now(),
+    //             askedBy: {
+    //                 name: user.username,
+    //                 avatar: user.avatar
+    //             },
+    //             answeredBy: {
+    //                 name: username,
+    //                 avatar: null
+    //             },
+    //             comments: [
+    //                 { text: "Can you provide more details?", user: "B" },
+    //                 { text: "Sure, here are the details...", user: "A" },
+    //                 { text: "Thanks, that helps a lot!", user: "B" },
+    //                 { text: "You're welcome!", user: "A" }
+    //             ]
+
+
+    //         }
+    //     )
+
+    // }
+
+
+
+    const fetchMessages = async (chat_id, userSecret, username, projectID, chatCount) => {
         try {
+            console.log("Fetching messages with parameters:");
+            console.log("Chat ID:", chat_id);
+            console.log("User Secret:", userSecret);
+            console.log("Username:", username);
+            console.log("Project ID:", projectID);
+
             const response = await axios.get(
                 `https://api.chatengine.io/chats/${chat_id}/messages/`,
                 {
@@ -47,18 +93,22 @@ const Chattop = ({ chat, username, activeChatId, user }) => {
                 }
             );
             console.log("Messages:", response.data);
+            setActiveMessages(response.data)
+
             return response.data;
         } catch (error) {
-            console.error("Error fetching messages:", error);
+            console.error("Error fetching messages:", error.response);
             throw error;
         }
     };
 
+
     useEffect(() => {
-        if (user && activeChatId) {
-            fetchMessages(activeChatId, user.password, user.username, import.meta.env.VITE_PROJECT_ID);
-        }
-    }, [activeChatId, user]);
+
+        fetchMessages(isActive, user?.password, user?.username, 'b1bf20c2-8b80-4ff1-b59f-ead732360b40')
+        console.log('state messages: ', activeMessages);
+
+    }, [isActive, user])
 
     useEffect(() => {
         rtcClient.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
@@ -190,17 +240,99 @@ const Chattop = ({ chat, username, activeChatId, user }) => {
     };
 
     const getOtherUser = (chat, username) => {
-        const otherMember = chat.people.find(
+        const otherMember = chat?.people.find(
             (member) => member.person.username !== username
         );
         return otherMember ? otherMember.person : null;
     };
 
-    const otherUser = getOtherUser(chat, username);
-
+    // const otherUser = getOtherUser(chat, username);
+    const [otherUser, setOtherUser] = useState(getOtherUser(chat, username))
     if (!otherUser) {
         return null;
     }
+
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    // const [tags, setTags] = useState([]);
+
+
+    // const handleSubmit = (e) => {
+    //     e.preventDefault();
+
+
+    //     setFormData(
+    //         {
+    //             title,
+    //             description,
+    //             tags,
+    //             askedDate: Date.now(),
+    //             askedBy: {
+    //                 name: username,
+    //                 avatar: 'link to the avatar'
+    //             },
+    //             answeredBy: {
+    //                 name: otherUser.username,
+    //                 avatar: null
+    //             },
+    //             comments: [
+    //                 { text: "Can you provide more details?", user: "B" },
+    //                 { text: "Sure, here are the details...", user: "A" },
+    //                 { text: "Thanks, that helps a lot!", user: "B" },
+    //                 { text: "You're welcome!", user: "A" }
+    //             ]
+    //         }
+    //     );
+
+    //     console.log(formData);
+    //     // Clear form after submit
+    //     setTitle('');
+    //     setDescription('');
+    //     setTags([]);
+    // };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const formData = {
+            title,
+            description,
+            tags,
+            askedDate: Date.now(),
+            askedBy: {
+                name: username,
+                avatar: null
+            },
+            answeredBy: {
+                name: otherUser.username,
+                avatar: null
+            },
+            comments: activeMessages.slice(-chatCount).map((message) => ({
+                text: message.text,
+                user: message.sender.username,
+            }))
+        }
+
+
+
+
+        try {
+
+
+            const response = await axios.post('http://localhost:3001/api/posts', formData)
+            console.log('Data saved:', response.data);
+        } catch (error) {
+            console.error('Error saving data:', error);
+        }
+
+
+
+        // Clear form after submit
+        setTitle('');
+        setDescription('');
+        setTags([]);
+    };
+
 
     return (
         <div>
@@ -253,7 +385,7 @@ const Chattop = ({ chat, username, activeChatId, user }) => {
                                     className="p-6"
                                     onClick={() => {
                                         fetchMessages(
-                                            activeChatId,
+                                            isActive,
                                             user?.password,
                                             user?.username,
                                             import.meta.env.VITE_PROJECT_ID
@@ -299,20 +431,67 @@ const Chattop = ({ chat, username, activeChatId, user }) => {
                                     </svg>
                                 </button>
 
+                                <button
+                                    className="p-6"
+                                    onClick={() =>
+                                        setShowRateModal(true) // Show rating modal when button is clicked
+                                    }
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth="1.5"
+                                        stroke="currentColor"
+                                        className="size-6"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.518 4.674a1.125 1.125 0 0 0 1.068.774h4.897c.969 0 1.371 1.24.588 1.81l-3.965 2.879a1.125 1.125 0 0 0-.411 1.265l1.518 4.674c.3.921-.755 1.688-1.54 1.265l-3.965-2.878a1.125 1.125 0 0 0-1.327 0l-3.965 2.878c-.784.423-1.84-.344-1.54-1.265l1.518-4.674a1.125 1.125 0 0 0-.411-1.265L2.974 10.185c-.783-.57-.38-1.81.588-1.81h4.897c.487 0 .92-.314 1.068-.774l1.518-4.674Z"
+                                        />
+                                    </svg>
+                                </button>
+
                                 <dialog id="knowledge-base" className="modal">
                                     <div className="modal-box">
                                         <h3 className="font-bold text-lg">
                                             Save chat to knowledge base
                                         </h3>
-                                        <input
-                                            type="text"
-                                            placeholder="insert title"
-                                            className="input m-4 input-bordered w-full max-w-xs"
-                                        />
-                                        <textarea
-                                            placeholder="insert Description for the issue"
-                                            className="textarea m-4 textarea-bordered textarea-lg w-full max-w-xs"
-                                        ></textarea>
+
+                                        <form onSubmit={handleSubmit}>
+                                            <input
+                                                type="text"
+                                                placeholder="insert title"
+                                                className="input m-4 input-bordered w-full max-w-xs"
+                                                value={title}
+                                                onChange={(e) => setTitle(e.target.value)}
+                                            />
+                                            <textarea
+                                                placeholder="insert Description for the issue"
+                                                className="textarea m-4 textarea-bordered textarea-lg w-full max-w-xs"
+                                                value={description}
+                                                onChange={(e) => setDescription(e.target.value)}
+                                            ></textarea>
+                                            <div className='m-4'>
+                                                <h1>Tags Input</h1>
+                                                <TagsInput tags={tags} setTags={setTags} />
+                                            </div>
+
+                                            {/* <input
+                                                type="number"
+                                                placeholder="insert the number of latest messages you want to save"
+                                                className="input m-4 input-bordered w-full max-w-xs"
+                                                value={chatCount}
+                                                onChange={(e) => setChatCount(e.target.value)}
+                                            /> */}
+
+                                            <button type="submit" className="btn btn-success m-4">
+                                                Save
+                                            </button>
+                                        </form>
+
+
                                         <div className="modal-action">
                                             <form method="dialog">
                                                 <button className="btn">Close</button>
@@ -341,6 +520,18 @@ const Chattop = ({ chat, username, activeChatId, user }) => {
                                             <form method="dialog">
                                                 <button className="btn">Close</button>
                                             </form>
+                                        </div>
+                                    </div>
+                                </dialog>
+
+
+
+                                <dialog open={showRateModal} className="modal" onClose={() => setShowRateModal(false)}>
+                                    <div className="modal-box">
+                                        <h3 className="font-bold text-lg">Rate User</h3>
+                                        <Rating username={otherUser.username} />
+                                        <div className="modal-action">
+                                            <button onClick={() => setShowRateModal(false)} className="btn">Close</button>
                                         </div>
                                     </div>
                                 </dialog>

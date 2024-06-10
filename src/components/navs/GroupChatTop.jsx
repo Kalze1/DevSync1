@@ -62,8 +62,8 @@ const GroupChatTop = ({ chat, currentUser }) => {
                 method: 'GET',
                 headers: {
                     'Project-ID': import.meta.env.VITE_PROJECT_ID,
-                    'User-Name': 'DagiB',
-                    'User-Secret': 'Dagi1234'
+                    'User-Name': 'ayu',
+                    'User-Secret': '123456'
 
                 }
             });

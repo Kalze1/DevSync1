@@ -3,6 +3,7 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import Select from 'react-select';
 import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
 const Sign_Up = () => {
     const [formData, setFormData] = useState({
@@ -22,6 +23,7 @@ const Sign_Up = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+    const navigate = useNavigate();
     const options = [
         { value: 'react', label: 'react' },
         { value: 'node', label: 'node' },
@@ -76,7 +78,7 @@ const Sign_Up = () => {
                 { username },
                 {
                     headers: {
-                        'Private-Key': import.meta.env.VITE_PROJECT_KEY, // Replace with your actual key
+                        'Private-Key': '8bf476cd-6524-45a7-9ece-bc47a5a0c812', // Replace with your actual key
                     },
                 }
             );
@@ -123,8 +125,8 @@ const Sign_Up = () => {
                 {
                     headers: {
                         'Project-ID': import.meta.env.VITE_PROJECT_ID,
-                        'User-Name': 'DagiB',
-                        'User-Secret': 'Dagi1234'
+                        'User-Name': 'ayu',
+                        'User-Secret': '123456'
                     },
                 }
             )
@@ -146,6 +148,7 @@ const Sign_Up = () => {
             const localResponse = await axios.post('http://localhost:3001/api/users', formData);
             console.log('Form Submitted Successfully:', localResponse.data);
 
+            navigate('/quiz', { state: { formData } });
             // Handle successful submission (e.g., clear form, show success message)
         } catch (error) {
             if (error.name === 'ValidationError') {

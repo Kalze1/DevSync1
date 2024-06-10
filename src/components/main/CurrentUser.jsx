@@ -35,7 +35,10 @@ const UserProfile = ({ setUser }) => {
 
         setUser({})
         console.log('logout');
-        navigate('/')
+        sessionStorage.removeItem('userAuthToken')
+        window.location.href = "/";
+        // navigate('/')
+
 
     }
     const handleEdit = (field) => {
@@ -147,7 +150,7 @@ const UserProfile = ({ setUser }) => {
 
 
                     <div>
-                        <button onClick={handleLogout} className="btn btn-primary">Logout</button>
+                        <button onClick={handleLogout} className="btn btn-error">Logout</button>
                     </div>
                 </div>
             </div>

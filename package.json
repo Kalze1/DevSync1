@@ -32,6 +32,7 @@
     "react-dom": "^18.2.0",
     "react-router": "^6.23.1",
     "react-router-dom": "^6.23.1",
+    "react-syntax-highlighter": "^15.5.0",
     "simple-peer": "^9.11.1",
     "socket.io-client": "^4.7.5",
     "tailwind-merge": "^2.3.0",
